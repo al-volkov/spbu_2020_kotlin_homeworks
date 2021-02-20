@@ -1,4 +1,4 @@
-package homework1
+package firsthomework
 
 object IterativeFactorial {
     fun get(n: Int): Int {
