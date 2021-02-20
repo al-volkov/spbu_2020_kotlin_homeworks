@@ -19,6 +19,8 @@ fun main() {
     val string1 = scanner.nextLine()
     println("Enter second string")
     val string2 = scanner.nextLine()
-    println("The second line is ${if (string1.length >= string2.length) numberOfOccurrences(string1,string2) else 0} times included in the first as a substring")
+    println("The second line is " +
+            "${if (string1.length >= string2.length) numberOfOccurrences(string1,string2) else 0}" +
+            " times included in the first as a substring")
     return
 }
