@@ -4,13 +4,7 @@ fun String.numberOfOccurrences(substr: String): Int {
     if ((this.length < substr.length) || (kotlin.math.min(this.length, substr.length) == 0)) {
         return 0
     }
-    var count = 0
-    for (i in this.windowed(substr.length)) {
-        if (i == substr) {
-            ++count
-        }
-    }
-    return count
+    return this.windowed(substr.length).filter { it == substr }.count()
 }
 
 fun main() {
