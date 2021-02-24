@@ -17,19 +17,20 @@ fun getRecursiveFactorial(n: Int): Int {
 
 fun getUserInput(): Int {
     val input: String = java.util.Scanner(System.`in`).next()
-    return (try {
+    val number = try {
         input.toInt()
     } catch (e: NumberFormatException) {
         error("Error! The entered string cannot be interpreted as an integer.")
-    })
+    }
+    if (number < 0) {
+        error("Error! A negative number has been entered.")
+    }
+    return number
 }
 
 fun main() {
     println("Enter a non-negative integer")
     val number = getUserInput()
-    if (number < 0) {
-        error("Error! A negative number has been entered.")
-    }
     println("Factorial of $number, calculated iteratively, equals ${getIterativeFactorial(number)}")
     println("Factorial of $number, calculated recursively, equals ${getRecursiveFactorial(number)}")
 }
