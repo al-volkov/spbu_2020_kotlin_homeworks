@@ -1,21 +1,22 @@
 package firsthomework
 
 fun main() {
+    val testNumbers: IntArray = intArrayOf(1, 2, 3, 4)
     val testObject = PerformedCommandStorage()
     testObject.undo()
-    testObject.pushFront(2)
+    testObject.pushFront(testNumbers[1])
     testObject.print()
-    testObject.pushFront(1)
+    testObject.pushFront(testNumbers[0])
     testObject.print()
-    testObject.pushBack(3)
+    testObject.pushBack(testNumbers[2])
     testObject.print()
-    testObject.pushBack(4)
+    testObject.pushBack(testNumbers[3])
     testObject.print()
-    testObject.moveElement(3,0)
+    testObject.moveElement(3, 0)
     testObject.print()
-    testObject.moveElement(1,2)
+    testObject.moveElement(1, 2)
     testObject.print()
-    repeat(7){
+    repeat(7) {
         testObject.undo()
         testObject.print()
     }
