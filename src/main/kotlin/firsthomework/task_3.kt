@@ -1,16 +1,21 @@
 package firsthomework
 
+const val NUMBER1 = 1
+const val NUMBER2 = 2
+const val NUMBER3 = 3
+const val NUMBER4 = 4
+
+
 fun main() {
-    val testNumbers: IntArray = intArrayOf(1, 2, 3, 4)
     val testObject = PerformedCommandStorage()
     testObject.undo()
-    testObject.pushFront(testNumbers[1])
+    testObject.pushFront(NUMBER2)
     testObject.print()
-    testObject.pushFront(testNumbers[0])
+    testObject.pushFront(NUMBER1)
     testObject.print()
-    testObject.pushBack(testNumbers[2])
+    testObject.pushBack(NUMBER3)
     testObject.print()
-    testObject.pushBack(testNumbers[3])
+    testObject.pushBack(NUMBER4)
     testObject.print()
     testObject.moveElement(3, 0)
     testObject.print()
