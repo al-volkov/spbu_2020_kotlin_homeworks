@@ -1,10 +1,10 @@
 package firsthomework
 
+const val NUMBER0 = 0
 const val NUMBER1 = 1
 const val NUMBER2 = 2
 const val NUMBER3 = 3
 const val NUMBER4 = 4
-
 
 fun main() {
     val testObject = PerformedCommandStorage()
@@ -17,11 +17,11 @@ fun main() {
     testObject.print()
     testObject.pushBack(NUMBER4)
     testObject.print()
-    testObject.moveElement(3, 0)
+    testObject.moveElement(NUMBER3, NUMBER0)
     testObject.print()
-    testObject.moveElement(1, 2)
+    testObject.moveElement(NUMBER1, NUMBER2)
     testObject.print()
-    repeat(7) {
+    repeat(NUMBER3 + NUMBER4) {
         testObject.undo()
         testObject.print()
     }
