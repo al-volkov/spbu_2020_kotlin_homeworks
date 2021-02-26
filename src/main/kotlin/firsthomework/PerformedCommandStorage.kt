@@ -106,16 +106,17 @@ class PerformedCommandStorage {
         MOVE
     }
 
-    private class Action(type: ActionType, index1: Int = 0, index2: Int = 0) {
+    private class Action(private var type: ActionType, private var index1: Int = 0, private var index2: Int = 0) {
         fun getType() = type
         fun getFirstIndex() = index1
         fun getSecondIndex() = index2
-        private val type = type
-        private val index1 = index1
-        private val index2 = index2
     }
 
-    private class Element(value: Int, nextElement: Element? = null, previousElement: Element? = null) {
+    private class Element(
+        private var value: Int,
+        private var nextElement: Element? = null,
+        private var previousElement: Element? = null
+    ) {
         fun getNext() = this.nextElement
 
         fun getPrevious() = this.previousElement
@@ -133,10 +134,6 @@ class PerformedCommandStorage {
         fun changeValue(newValue: Int) {
             this.value = newValue
         }
-
-        private var value = value
-        private var nextElement: Element? = nextElement
-        private var previousElement: Element? = previousElement
     }
 
     private var size: Int = 0
