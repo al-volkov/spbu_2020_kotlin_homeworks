@@ -2,24 +2,13 @@ package firsthomework
 
 import java.lang.IndexOutOfBoundsException
 
-fun ArrayDeque<Int>.moveElements(firstIndex: Int, secondIndex: Int) {
-    if (kotlin.math.max(firstIndex, secondIndex) >= this.size || kotlin.math.min(firstIndex, secondIndex) < 0) {
+private fun ArrayDeque<Int>.moveElement(startingIndex: Int, finalIndex: Int) {
+    if (kotlin.math.max(startingIndex, finalIndex) >= this.size || kotlin.math.min(startingIndex, finalIndex) < 0) {
         throw IndexOutOfBoundsException("It is impossible to rearrange elements with such indexes.")
     }
-    var first = firstIndex
-    var second = secondIndex
-    if (first < second) {
-        val temporary = first
-        first = second
-        second = temporary
-    }
-    if (first != second) {
-        val temporary = this[first]
-        this.removeAt(first)
-        this.add(first, this[second])
-        this.removeAt(second)
-        this.add(second, temporary)
-    }
+    val valueOfElement = this[startingIndex]
+    this.removeAt(startingIndex)
+    this.add(finalIndex, valueOfElement)
 }
 
 interface Action {
@@ -28,41 +17,38 @@ interface Action {
 
 class PushForward(value: Int, private val storage: PerformedCommandStorage) : Action {
     init {
-        storage.getDeque().addFirst(value)
-        storage.getActions().addElement(this)
+        storage.arrayDeque.addFirst(value)
+        storage.addAction(this)
     }
 
     override fun undo() {
-        storage.getDeque().removeFirst()
-        storage.getActions().removeLast()
+        storage.arrayDeque.removeFirst()
     }
 }
 
 class PushBack(value: Int, private val storage: PerformedCommandStorage) : Action {
     init {
-        storage.getDeque().addLast(value)
-        storage.getActions().addElement(this)
+        storage.arrayDeque.addLast(value)
+        storage.addAction(this)
     }
 
     override fun undo() {
-        storage.getDeque().removeLast()
-        storage.getActions().removeLast()
+        storage.arrayDeque.removeLast()
     }
 }
 
-class MoveElements(
-    private val firstIndex: Int,
-    private val secondIndex: Int,
+class MoveElement(
+    private val startingIndex: Int,
+    private val finalIndex: Int,
     private val storage: PerformedCommandStorage
 ) :
     Action {
     init {
-        storage.getDeque().moveElements(firstIndex, secondIndex)
-        storage.getActions().addElement(this)
+        storage.arrayDeque.moveElement(startingIndex, finalIndex)
+        storage.addAction(this)
     }
 
     override fun undo() {
-        storage.getDeque().moveElements(firstIndex, secondIndex)
-        storage.getActions().removeLast()
+        storage.arrayDeque.moveElement(finalIndex, startingIndex)
     }
 }
