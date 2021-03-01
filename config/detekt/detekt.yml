@@ -1,10 +1,4 @@
-formatting:
-  PackageName:
-    active: false
-    autoCorrect: true
-
 naming:
   PackageNaming:
-    active: false
-    excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
-    packagePattern: '[a-z]+(\.[a-z][A-Za-z0-9]*)*'
+    active: true
+    packagePattern: '[a-z][A-Za-z0-9_]*'
