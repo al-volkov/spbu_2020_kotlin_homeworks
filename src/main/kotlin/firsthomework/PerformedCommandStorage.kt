@@ -20,6 +20,10 @@ class PerformedCommandStorage {
     }
 
     fun print() {
-        println(this._arrayDeque.joinToString(" "))
+        if (this._arrayDeque.size == 0) {
+            println("No elements (empty queue)")
+        } else {
+            println(this._arrayDeque.joinToString(" "))
+        }
     }
 }

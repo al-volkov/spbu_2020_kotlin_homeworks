@@ -25,7 +25,7 @@ fun main() {
     testStorage.print()
     MoveElement(NUMBER1, NUMBER2, testStorage)
     testStorage.print()
-    repeat(NUMBER5 + NUMBER3) {
+    repeat(NUMBER5 + NUMBER2) {
         testStorage.undo()
         testStorage.print()
     }

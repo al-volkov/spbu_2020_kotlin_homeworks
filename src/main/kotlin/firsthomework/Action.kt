@@ -41,8 +41,7 @@ class MoveElement(
     private val startingIndex: Int,
     private val finalIndex: Int,
     private val storage: PerformedCommandStorage
-) :
-    Action {
+) : Action {
     init {
         storage.arrayDeque.moveElement(startingIndex, finalIndex)
         storage.addAction(this)
