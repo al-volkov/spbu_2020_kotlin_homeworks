@@ -1,4 +1,4 @@
 naming:
   PackageNaming:
     active: true
-    packagePattern: '[a-z][A-Za-z0-9_]*'
+    packagePattern: '[a-z][A-Za-z0-9_]*(\.[a-z][A-Za-z0-9]*)*'
