@@ -1,3 +1,7 @@
+formatting:
+  PackageName:
+    active: false
+
 naming:
   PackageNaming:
     packagePattern: '[a-z][A-Za-z0-9_]*(\.[a-z][A-Za-z0-9]*)*'
