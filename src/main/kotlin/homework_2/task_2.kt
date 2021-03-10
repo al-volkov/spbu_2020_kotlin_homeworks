@@ -1,18 +1,20 @@
 package homework_2
 
-const val NUMBER1 = 1
-const val NUMBER2 = 2
-const val NUMBER3 = 3
-
 fun IntArray.removeDuplicateElements(): IntArray {
     val set: LinkedHashSet<Int> = linkedSetOf()
-    set.addAll(this.toTypedArray())
-    return set.toIntArray()
+    set.addAll(this.reversed().toTypedArray())
+    return set.reversed().toIntArray()
+}
+
+fun getArray(): IntArray {
+    print("Enter the number of elements\n")
+    val scanner = java.util.Scanner(System.`in`)
+    val size = scanner.nextInt()
+    println("Enter the elements")
+    return IntArray(size) { scanner.nextInt() }
 }
 
 fun main() {
-    val testArray = intArrayOf(NUMBER1, NUMBER2, NUMBER3, NUMBER3, NUMBER1)
-    print(testArray.joinToString())
-    print("\n")
-    print(testArray.removeDuplicateElements().joinToString())
+    val array = getArray()
+    print("Array without duplicate elements:" + array.removeDuplicateElements().joinToString(" "))
 }
