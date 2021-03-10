@@ -40,8 +40,6 @@ tasks.withType<KotlinCompile>() {
 }
 
 tasks.dokkaHtml {
-    outputDirectory.set(file("src"))
-    moduleName.set("PerformedCommandStorage")
     dokkaSourceSets {
         configureEach {
             includeNonPublic.set(true)
