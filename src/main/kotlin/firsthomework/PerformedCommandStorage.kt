@@ -1,6 +1,11 @@
 package firsthomework
 
+import kotlinx.serialization.decodeFromString
 import kotlin.collections.ArrayDeque
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.File
+import java.io.FileWriter
 
 class PerformedCommandStorage {
     val arrayDeque: ArrayDeque<Int>
@@ -14,7 +19,7 @@ class PerformedCommandStorage {
         if (actions.isEmpty()) {
             println("No action has been taken yet.")
         } else {
-            actions.lastElement().undo()
+            actions.lastElement().undo(this)
             actions.removeLast()
         }
     }
@@ -24,6 +29,22 @@ class PerformedCommandStorage {
             println("No elements (empty queue)")
         } else {
             println(this._arrayDeque.joinToString(" "))
+        }
+    }
+
+    fun serialize(path: String) {
+        val temporaryList = actions.toList()
+        val stringInJsonFormat = Json.encodeToString(temporaryList)
+        val newFile = FileWriter(path)
+        newFile.write(stringInJsonFormat)
+        newFile.flush()
+    }
+
+    fun deserialize(path: String) {
+        val stringInJsonFormat = File(path).inputStream().readAllBytes().toString(Charsets.UTF_8)
+        val listWithActions = Json.decodeFromString<List<Action>>(stringInJsonFormat)
+        for (action in listWithActions) {
+            action.execute(this)
         }
     }
 }
