@@ -1,5 +1,6 @@
 package firsthomework
 
+import kotlinx.serialization.SerialName
 import java.lang.IndexOutOfBoundsException
 import kotlinx.serialization.Serializable
 
@@ -19,6 +20,7 @@ sealed class Action {
 }
 
 @Serializable
+@SerialName("PushForward")
 class PushForward(private val value: Int) : Action() {
     override fun execute(storage: PerformedCommandStorage) {
         storage.arrayDeque.addFirst(value)
@@ -31,6 +33,7 @@ class PushForward(private val value: Int) : Action() {
 }
 
 @Serializable
+@SerialName("PushBack")
 class PushBack(private val value: Int) : Action() {
     override fun execute(storage: PerformedCommandStorage) {
         storage.arrayDeque.addLast(value)
@@ -43,6 +46,7 @@ class PushBack(private val value: Int) : Action() {
 }
 
 @Serializable
+@SerialName("MoveElement")
 class MoveElement(private val startingIndex: Int, private val finalIndex: Int) : Action() {
     override fun execute(storage: PerformedCommandStorage) {
         storage.arrayDeque.moveElement(startingIndex, finalIndex)

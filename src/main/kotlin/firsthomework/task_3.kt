@@ -6,6 +6,7 @@ const val NUMBER2 = 2
 const val NUMBER3 = 3
 const val NUMBER4 = 4
 const val NUMBER5 = 5
+const val FILE_NAME = "testfile.json"
 
 fun main() {
     val testStorage1 = PerformedCommandStorage()
@@ -26,9 +27,9 @@ fun main() {
     MoveElement(NUMBER1, NUMBER2).execute(testStorage1)
     println("State of the first list at the time of serialization:")
     testStorage1.print()
-    testStorage1.serialize("testfile.json")
+    testStorage1.serialize(FILE_NAME)
     val testStorage2 = PerformedCommandStorage()
-    testStorage2.deserialize("testfile.json")
+    testStorage2.deserialize(FILE_NAME)
     println("State of the second list after deserialization:")
     testStorage2.print()
     println("Actions are now undone:")
