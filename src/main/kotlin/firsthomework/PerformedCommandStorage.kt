@@ -49,6 +49,10 @@ class PerformedCommandStorage {
         }
     }
 
+    /**
+     * Serializes [actions] and places in file
+     * @param path path to the file where the data will be saved
+     */
     fun serialize(path: String) {
         val temporaryList = actions.toList()
         val stringInJsonFormat = Json.encodeToString(temporaryList)
@@ -57,6 +61,10 @@ class PerformedCommandStorage {
         newFile.flush()
     }
 
+    /**
+     * Deserializes a list with actions and applies them to the [arrayDeque]
+     * @param path path to the file from which the data is taken
+     */
     fun deserialize(path: String) {
         val stringInJsonFormat = File(path).inputStream().readAllBytes().toString(Charsets.UTF_8)
         val listWithActions = Json.decodeFromString<List<Action>>(stringInJsonFormat)

@@ -17,6 +17,7 @@ private fun ArrayDeque<Int>.moveElement(startingIndex: Int, finalIndex: Int) {
     this.removeAt(startingIndex)
     this.add(finalIndex, valueOfElement)
 }
+
 /**
  * For actions on a list of numbers that can be undone
  */
@@ -25,6 +26,7 @@ sealed class Action {
     abstract fun execute(storage: PerformedCommandStorage)
     abstract fun undo(storage: PerformedCommandStorage)
 }
+
 /**
  * Class for adding numbers to the beginning of a list
  * @property value The value of the element we want to add
@@ -40,6 +42,7 @@ class PushForward(private val value: Int) : Action() {
         storage.arrayDeque.addFirst(value)
         storage.addAction(this)
     }
+
     /**
      * Removes an item from the beginning of the list
      * @param storage The [PerformedCommandStorage] we work with
@@ -48,6 +51,7 @@ class PushForward(private val value: Int) : Action() {
         storage.arrayDeque.removeFirst()
     }
 }
+
 /**
  * Class for adding numbers to the end of a list
  * @property value The value of the element we want to add
@@ -63,6 +67,7 @@ class PushBack(private val value: Int) : Action() {
         storage.arrayDeque.addLast(value)
         storage.addAction(this)
     }
+
     /**
      * Removes an item from the end of the list
      * @param storage The [PerformedCommandStorage] we work with
@@ -71,6 +76,7 @@ class PushBack(private val value: Int) : Action() {
         storage.arrayDeque.removeLast()
     }
 }
+
 /**
  * A class that allows you to shift an item in a list
  * @property startingIndex The initial position of the element
@@ -87,6 +93,7 @@ class MoveElement(private val startingIndex: Int, private val finalIndex: Int) :
         storage.arrayDeque.moveElement(startingIndex, finalIndex)
         storage.addAction(this)
     }
+
     /**
      * Moves an element from position finalIndex to position startingIndex
      * @param storage The [PerformedCommandStorage] we work with
