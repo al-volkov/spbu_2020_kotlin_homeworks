@@ -5,6 +5,7 @@ plugins {
     kotlin("jvm") version "1.4.30"
     id("io.gitlab.arturbosch.detekt") version "1.15.0"
     id("org.jetbrains.dokka") version "1.4.20"
+    kotlin("plugin.serialization") version "1.4.31"
     application
 }
 
@@ -17,19 +18,24 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test-junit"))
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
+    implementation(platform("org.junit:junit-bom:5.7.1"))
+    implementation("org.junit.jupiter:junit-jupiter")
+    implementation("com.squareup:kotlinpoet:1.7.2")
+    implementation("com.charleskorn.kaml:kaml:0.28.3")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.14.2")
+}
+
+tasks {
+    test {
+        useJUnitPlatform()
+    }
 }
 
 detekt {
     failFast = true // fail build on any finding
     config = files("config/detekt/detekt.yml")
     buildUponDefaultConfig = true
-}
-
-tasks.test {
-    useJUnit()
 }
 
 tasks.withType<KotlinCompile>() {
