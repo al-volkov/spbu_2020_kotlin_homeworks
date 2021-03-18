@@ -27,9 +27,7 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
                 }
                 this.rotateRight()
             }
-            else -> {
-                this
-            }
+            else -> this
         }
     }
 
@@ -139,13 +137,5 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
     fun containsValue(value: V): Boolean {
         return (this.value == value) || (leftChild?.containsValue(value) ?: false) || (rightChild?.containsValue(value)
             ?: false)
-    }
-
-    fun containsKey(key: K): Boolean {
-        return this.getNode(key) != null
-    }
-
-    fun size(): Int {
-        return 1 + (leftChild?.size() ?: 0) + (rightChild?.size() ?: 0)
     }
 }
