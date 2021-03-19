@@ -3,7 +3,10 @@ package firsthomework
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.deleteExisting
+import kotlin.io.path.deleteIfExists
 
 internal class PerformedCommandStorageTest {
 
@@ -35,5 +38,6 @@ internal class PerformedCommandStorageTest {
         val secondStorage = PerformedCommandStorage()
         secondStorage.deserialize(pathToTemporaryFile.toString())
         assertEquals(firstStorage.arrayDeque, secondStorage.arrayDeque)
+        File(pathToTemporaryFile.toString()).delete()
     }
 }
