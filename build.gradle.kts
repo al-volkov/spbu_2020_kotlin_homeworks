@@ -19,8 +19,8 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("org.junit:junit-bom:5.7.1"))
-    implementation("org.junit.jupiter:junit-jupiter")
+    testImplementation(platform("org.junit:junit-bom:5.7.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.14.2")
 }
@@ -31,18 +31,16 @@ detekt {
     buildUponDefaultConfig = true
 }
 
-tasks {
-    test {
-        useJUnitPlatform()
-        testLogging {
-            events(
-                TestLogEvent.STANDARD_ERROR,
-                TestLogEvent.STARTED,
-                TestLogEvent.PASSED,
-                TestLogEvent.FAILED,
-                TestLogEvent.SKIPPED
-            )
-        }
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events(
+            TestLogEvent.STANDARD_ERROR,
+            TestLogEvent.STARTED,
+            TestLogEvent.PASSED,
+            TestLogEvent.FAILED,
+            TestLogEvent.SKIPPED
+        )
     }
 }
 
