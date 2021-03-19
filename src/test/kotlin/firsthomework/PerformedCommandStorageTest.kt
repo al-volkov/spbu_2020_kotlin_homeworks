@@ -38,6 +38,6 @@ internal class PerformedCommandStorageTest {
         val secondStorage = PerformedCommandStorage()
         secondStorage.deserialize(pathToTemporaryFile.toString())
         assertEquals(firstStorage.arrayDeque, secondStorage.arrayDeque)
-        File(pathToTemporaryFile.toString()).delete()
+        File(pathToTemporaryFile.toString()).setWritable(true)
     }
 }
