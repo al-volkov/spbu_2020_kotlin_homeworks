@@ -2,6 +2,8 @@ package firsthomework
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
 
 internal class PerformedCommandStorageTest {
 
@@ -22,15 +24,16 @@ internal class PerformedCommandStorageTest {
     }
 
     @Test
-    fun serializationTest() {
+    fun serializationTest(@TempDir tempDir: Path){
+        val pathToTemporaryFile = tempDir.resolve("testfilee.json")
         val firstStorage = PerformedCommandStorage()
         PushForward(2).execute(firstStorage)
         PushForward(1).execute(firstStorage)
         PushBack(3).execute(firstStorage)
         PushBack(4).execute(firstStorage)
-        firstStorage.serialize("src/test/resources/testfile.json")
+        firstStorage.serialize(pathToTemporaryFile.toString())
         val secondStorage = PerformedCommandStorage()
-        secondStorage.deserialize("src/test/resources/testfile.json")
+        secondStorage.deserialize(pathToTemporaryFile.toString())
         assertEquals(firstStorage.arrayDeque, secondStorage.arrayDeque)
     }
 }
