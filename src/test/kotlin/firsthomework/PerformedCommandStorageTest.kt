@@ -22,7 +22,7 @@ internal class PerformedCommandStorageTest {
     }
 
     @Test
-    fun testSerialization() {
+    fun serializationTest() {
         val firstStorage = PerformedCommandStorage()
         PushForward(2).execute(firstStorage)
         PushForward(1).execute(firstStorage)

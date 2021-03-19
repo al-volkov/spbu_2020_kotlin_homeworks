@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 internal class ActionTest {
 
     @Test
-    fun testPushForward() {
+    fun pushForwardTest() {
         val storage = PerformedCommandStorage()
         PushForward(1).execute(storage)
         assertEquals(ArrayDeque(listOf(1)), storage.arrayDeque)
@@ -15,7 +15,7 @@ internal class ActionTest {
     }
 
     @Test
-    fun testPushBack() {
+    fun pushBackTest() {
         val storage = PerformedCommandStorage()
         PushBack(3).execute(storage)
         assertEquals(ArrayDeque(listOf(3)), storage.arrayDeque)
@@ -24,7 +24,7 @@ internal class ActionTest {
     }
 
     @Test
-    fun testMoveElement() {
+    fun moveElementTest() {
         val storage = PerformedCommandStorage()
         for (i in 1..4) {
             PushBack(i).execute(storage)
@@ -36,7 +36,7 @@ internal class ActionTest {
     }
 
     @Test
-    fun testUndo() {
+    fun undoActionTest() {
         val storage = PerformedCommandStorage()
         PushForward(2).execute(storage)
         PushForward(1).execute(storage)
