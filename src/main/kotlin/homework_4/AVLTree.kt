@@ -9,7 +9,7 @@ class AVLTree<K : Comparable<K>, V> {
     fun isEmpty() = root == null
 
     fun containsKey(key: K): Boolean {
-        return root?.getNode(key) != null
+        return root?.containsKey(key) ?: false
     }
 
     fun containsValue(value: V): Boolean {
@@ -27,7 +27,7 @@ class AVLTree<K : Comparable<K>, V> {
             null
         } else {
             val result = root?.put(key, value)
-            if(result == null){
+            if (result == null) {
                 ++size
             }
             root = root?.balance()
@@ -37,7 +37,7 @@ class AVLTree<K : Comparable<K>, V> {
 
     fun remove(key: K): V? {
         val previousValue: V? = this.get(key)
-        if(previousValue != null){
+        if (previousValue != null) {
             --size
         }
         root = root?.remove(key)

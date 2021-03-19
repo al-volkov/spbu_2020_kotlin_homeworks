@@ -1,5 +1,8 @@
 package homework_4
 
+const val OUTWEIGHS_TO_THE_RIGHT = 2
+const val OUTWEIGHS_TO_THE_LEFT = -2
+
 class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
     val value: V
         get() {
@@ -15,13 +18,13 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
         rightChild = rightChild?.balance()
         this.updateHeight()
         return when {
-            this.getBalanceFactor() == 2 -> {
+            this.getBalanceFactor() == OUTWEIGHS_TO_THE_RIGHT -> {
                 if (rightChild?.getBalanceFactor() ?: 0 < 0) {
                     rightChild = rightChild?.rotateRight()
                 }
                 this.rotateLeft()
             }
-            this.getBalanceFactor() == -2 -> {
+            this.getBalanceFactor() == OUTWEIGHS_TO_THE_LEFT -> {
                 if (leftChild?.getBalanceFactor() ?: 0 > 0) {
                     leftChild = leftChild?.rotateLeft()
                 }
@@ -94,6 +97,7 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
     }
 
     fun remove(key: K): AVLNode<K, V>? {
+        var result: AVLNode<K, V>? = null
         when {
             key < this.key -> {
                 leftChild = leftChild?.remove(key)
@@ -102,24 +106,30 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
                 rightChild = rightChild?.remove(key)
             }
             else -> {
-                if (leftChild == null) {
-                    return rightChild
-                } else {
-                    if (rightChild == null) {
-                        return leftChild
-                    } else {
+                when {
+                    leftChild == null -> {
+                        result = rightChild
+                    }
+                    rightChild == null -> {
+                        result = leftChild
+                    }
+                    else -> {
                         val minimalNode: AVLNode<K, V> = rightChild?.min() ?: this
                         this.pvalue = minimalNode.pvalue
                         this.key = minimalNode.key
                         if (rightChild?.key == minimalNode.key) {
-                            rightChild = null
+                            this.rightChild = rightChild?.rightChild
+                        } else {
+                            rightChild?.removeMin(this.key)
                         }
-                        rightChild?.removeMin(this.key)
                     }
                 }
             }
         }
-        return this.balance()
+        if (result == null) {
+            result = this.balance()
+        }
+        return result
     }
 
     private fun min(): AVLNode<K, V> {
@@ -127,7 +137,7 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
     }
 
     private fun removeMin(minKey: K) {
-        if (leftChild?.pvalue == minKey) {
+        if (leftChild?.key == minKey) {
             leftChild = null
         } else {
             leftChild?.removeMin(minKey)
@@ -137,5 +147,9 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
     fun containsValue(value: V): Boolean {
         return (this.value == value) || (leftChild?.containsValue(value) ?: false) || (rightChild?.containsValue(value)
             ?: false)
+    }
+
+    fun containsKey(key: K): Boolean {
+        return this.getNode(key) != null
     }
 }
