@@ -27,8 +27,8 @@ internal class PerformedCommandStorageTest {
     }
 
     @Test
-    fun serializationTest(@TempDir tempDir: Path){
-        val pathToTemporaryFile = tempDir.resolve("testfilee.json")
+    fun serializationTest(@TempDir tempDir: Path) {
+        val pathToTemporaryFile = tempDir.resolve("testfile.json")
         val firstStorage = PerformedCommandStorage()
         PushForward(2).execute(firstStorage)
         PushForward(1).execute(firstStorage)
@@ -38,6 +38,6 @@ internal class PerformedCommandStorageTest {
         val secondStorage = PerformedCommandStorage()
         secondStorage.deserialize(pathToTemporaryFile.toString())
         assertEquals(firstStorage.arrayDeque, secondStorage.arrayDeque)
-        File(pathToTemporaryFile.toString()).setWritable(true)
+        File(tempDir.toString()).setWritable(true)
     }
 }
