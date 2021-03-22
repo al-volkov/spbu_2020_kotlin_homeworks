@@ -1,30 +1,32 @@
-package firsthomework
+@file:Suppress("MagicNumber")
 
-const val NUMBER0 = 0
-const val NUMBER1 = 1
-const val NUMBER2 = 2
-const val NUMBER3 = 3
-const val NUMBER4 = 4
-const val NUMBER5 = 5
-const val FILE_NAME = "testfile.json"
+package homework_1
+
+const val FILE_NAME = "src/main/resources/testfile.json"
 
 fun main() {
+    val number0 = 0
+    val number1 = 1
+    val number2 = 2
+    val number3 = 3
+    val number4 = 4
+    val number5 = 5
     val testStorage1 = PerformedCommandStorage()
     testStorage1.undo()
     testStorage1.print()
-    PushForward(NUMBER2).execute(testStorage1)
+    PushForward(number2).execute(testStorage1)
     testStorage1.print()
-    PushForward(NUMBER1).execute(testStorage1)
+    PushForward(number1).execute(testStorage1)
     testStorage1.print()
-    PushBack(NUMBER3).execute(testStorage1)
+    PushBack(number3).execute(testStorage1)
     testStorage1.print()
-    PushBack(NUMBER4).execute(testStorage1)
+    PushBack(number4).execute(testStorage1)
     testStorage1.print()
-    MoveElement(NUMBER0, NUMBER3).execute(testStorage1)
+    MoveElement(number0, number3).execute(testStorage1)
     testStorage1.print()
-    MoveElement(NUMBER2, NUMBER0).execute(testStorage1)
+    MoveElement(number2, number0).execute(testStorage1)
     testStorage1.print()
-    MoveElement(NUMBER1, NUMBER2).execute(testStorage1)
+    MoveElement(number1, number2).execute(testStorage1)
     println("State of the first list at the time of serialization:")
     testStorage1.print()
     testStorage1.serialize(FILE_NAME)
@@ -33,7 +35,7 @@ fun main() {
     println("State of the second list after deserialization:")
     testStorage2.print()
     println("Actions are now undone:")
-    repeat(NUMBER5 + NUMBER2) {
+    repeat(number5 + number2) {
         testStorage1.undo()
         testStorage1.print()
     }
