@@ -3,7 +3,7 @@
 package homework_1
 
 fun main() {
-    val fileName = "src/main/resources/kotlin/homework_1/testfile.json"
+    val fileName = "src/main/resources/homework_1/testfile.json"
     val number0 = 0
     val number1 = 1
     val number2 = 2
