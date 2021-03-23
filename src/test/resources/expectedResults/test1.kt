@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 
 internal class PerformedCommandStorageTest {
   @Test
-  public fun forwardApply(): Unit {
+  public fun forwardBpply(): Unit {
   }
 
   @Test
