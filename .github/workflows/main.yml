@@ -40,4 +40,4 @@ jobs:
         with:
           name: test-report
           path:
-            D:/a/spbu_2020_kotlin_homeworks/spbu_2020_kotlin_homeworks/build/reports/tests/test/index.html
+            D:/a/spbu_2020_kotlin_homeworks/spbu_2020_kotlin_homeworks/build/reports/tests
