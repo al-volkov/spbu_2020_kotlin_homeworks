@@ -26,7 +26,7 @@ internal class Task_3KtTest {
     @ParameterizedTest(name = "test {index}, {1}")
     fun generateFileForTests(expected: String, input: String) {
         try {
-            assertEquals(expected, input)
+            assertEquals(expected.replace("\r", ""), input.replace("\r", ""))
         } catch (e: AssertionFailedError) {
             for (i in expected.indices) {
                 if (expected[i] != input[i]) {
