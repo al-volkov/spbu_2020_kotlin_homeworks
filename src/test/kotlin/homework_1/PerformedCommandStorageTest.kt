@@ -1,12 +1,10 @@
-package firsthomework
+package homework_1
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.deleteExisting
-import kotlin.io.path.deleteIfExists
 
 internal class PerformedCommandStorageTest {
 
