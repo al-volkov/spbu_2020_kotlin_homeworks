@@ -2,9 +2,8 @@
 
 package homework_1
 
-const val FILE_NAME = "src/main/resources/testfile.json"
-
 fun main() {
+    val fileName = "src/main/resources/kotlin/homework_1/testfile.json"
     val number0 = 0
     val number1 = 1
     val number2 = 2
@@ -29,9 +28,9 @@ fun main() {
     MoveElement(number1, number2).execute(testStorage1)
     println("State of the first list at the time of serialization:")
     testStorage1.print()
-    testStorage1.serialize(FILE_NAME)
+    testStorage1.serialize(fileName)
     val testStorage2 = PerformedCommandStorage()
-    testStorage2.deserialize(FILE_NAME)
+    testStorage2.deserialize(fileName)
     println("State of the second list after deserialization:")
     testStorage2.print()
     println("Actions are now undone:")
