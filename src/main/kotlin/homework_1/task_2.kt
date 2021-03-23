@@ -1,4 +1,4 @@
-package firsthomework
+package homework_1
 
 fun String.numberOfOccurrences(substr: String): Int {
     if ((this.length < substr.length) || (kotlin.math.min(this.length, substr.length) == 0)) {

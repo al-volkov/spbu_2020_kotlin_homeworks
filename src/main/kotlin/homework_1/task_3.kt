@@ -1,4 +1,4 @@
-package firsthomework
+package homework_1
 
 const val NUMBER0 = 0
 const val NUMBER1 = 1

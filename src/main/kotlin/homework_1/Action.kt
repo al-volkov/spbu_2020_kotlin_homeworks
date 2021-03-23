@@ -1,4 +1,4 @@
-package firsthomework
+package homework_1
 
 import java.lang.IndexOutOfBoundsException
 
