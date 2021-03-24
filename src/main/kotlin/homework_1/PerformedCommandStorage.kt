@@ -1,6 +1,11 @@
-package firsthomework
+package homework_1
 
+import kotlinx.serialization.decodeFromString
 import kotlin.collections.ArrayDeque
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.File
+import java.io.FileWriter
 
 /**
  * Stores a list of numbers and actions on it
@@ -28,7 +33,7 @@ class PerformedCommandStorage {
         if (actions.isEmpty()) {
             println("No action has been taken yet.")
         } else {
-            actions.lastElement().undo()
+            actions.lastElement().undo(this)
             actions.removeLast()
         }
     }
@@ -41,6 +46,30 @@ class PerformedCommandStorage {
             println("No elements (empty queue)")
         } else {
             println(this._arrayDeque.joinToString(" "))
+        }
+    }
+
+    /**
+     * Serializes [actions] and places in file
+     * @param path path to the file where the data will be saved
+     */
+    fun serialize(path: String) {
+        val temporaryList = actions.toList()
+        val stringInJsonFormat = Json.encodeToString(temporaryList)
+        val newFile = FileWriter(path)
+        newFile.write(stringInJsonFormat)
+        newFile.flush()
+    }
+
+    /**
+     * Deserializes a list with actions and applies them to the [arrayDeque]
+     * @param path path to the file from which the data is taken
+     */
+    fun deserialize(path: String) {
+        val stringInJsonFormat = File(path).readText(Charsets.UTF_8)
+        val listWithActions = Json.decodeFromString<List<Action>>(stringInJsonFormat)
+        for (action in listWithActions) {
+            action.execute(this)
         }
     }
 }

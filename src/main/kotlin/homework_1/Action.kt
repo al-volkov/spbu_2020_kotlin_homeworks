@@ -1,6 +1,8 @@
-package firsthomework
+package homework_1
 
+import kotlinx.serialization.SerialName
 import java.lang.IndexOutOfBoundsException
+import kotlinx.serialization.Serializable
 
 /**
  * Moves an element from position [startingIndex] to position [finalIndex]
@@ -15,49 +17,62 @@ private fun ArrayDeque<Int>.moveElement(startingIndex: Int, finalIndex: Int) {
     this.removeAt(startingIndex)
     this.add(finalIndex, valueOfElement)
 }
+
 /**
  * For actions on a list of numbers that can be undone
  */
-interface Action {
-    fun undo()
+@Serializable
+sealed class Action {
+    abstract fun execute(storage: PerformedCommandStorage)
+    abstract fun undo(storage: PerformedCommandStorage)
 }
+
 /**
  * Class for adding numbers to the beginning of a list
- * @param value The value of the element we want to add
- * @property storage The [PerformedCommandStorage] we work with
+ * @property value The value of the element we want to add
  */
-class PushForward(value: Int, private val storage: PerformedCommandStorage) : Action {
+@Serializable
+@SerialName("PushForward")
+class PushForward(private val value: Int) : Action() {
     /**
      * Adds an element to the beginning of the list
+     * @param storage The [PerformedCommandStorage] we work with
      */
-    init {
+    override fun execute(storage: PerformedCommandStorage) {
         storage.arrayDeque.addFirst(value)
         storage.addAction(this)
     }
+
     /**
      * Removes an item from the beginning of the list
+     * @param storage The [PerformedCommandStorage] we work with
      */
-    override fun undo() {
+    override fun undo(storage: PerformedCommandStorage) {
         storage.arrayDeque.removeFirst()
     }
 }
+
 /**
  * Class for adding numbers to the end of a list
- * @param value The value of the element we want to add
- * @property storage The [PerformedCommandStorage] we work with
+ * @property value The value of the element we want to add
  */
-class PushBack(value: Int, private val storage: PerformedCommandStorage) : Action {
+@Serializable
+@SerialName("PushBack")
+class PushBack(private val value: Int) : Action() {
     /**
      * Adds an element to the end of the list
+     * @param storage The [PerformedCommandStorage] we work with
      */
-    init {
+    override fun execute(storage: PerformedCommandStorage) {
         storage.arrayDeque.addLast(value)
         storage.addAction(this)
     }
+
     /**
      * Removes an item from the end of the list
+     * @param storage The [PerformedCommandStorage] we work with
      */
-    override fun undo() {
+    override fun undo(storage: PerformedCommandStorage) {
         storage.arrayDeque.removeLast()
     }
 }
@@ -66,24 +81,24 @@ class PushBack(value: Int, private val storage: PerformedCommandStorage) : Actio
  * A class that allows you to shift an item in a list
  * @property startingIndex The initial position of the element
  * @property finalIndex End position of the element
- * @property storage The [PerformedCommandStorage] we work with
  */
-class MoveElement(
-    private val startingIndex: Int,
-    private val finalIndex: Int,
-    private val storage: PerformedCommandStorage
-) : Action {
+@Serializable
+@SerialName("MoveElement")
+class MoveElement(private val startingIndex: Int, private val finalIndex: Int) : Action() {
     /**
      * Moves an element from position startingIndex to position finalIndex
+     * @param storage The [PerformedCommandStorage] we work with
      */
-    init {
+    override fun execute(storage: PerformedCommandStorage) {
         storage.arrayDeque.moveElement(startingIndex, finalIndex)
         storage.addAction(this)
     }
+
     /**
      * Moves an element from position finalIndex to position startingIndex
+     * @param storage The [PerformedCommandStorage] we work with
      */
-    override fun undo() {
+    override fun undo(storage: PerformedCommandStorage) {
         storage.arrayDeque.moveElement(finalIndex, startingIndex)
     }
 }
