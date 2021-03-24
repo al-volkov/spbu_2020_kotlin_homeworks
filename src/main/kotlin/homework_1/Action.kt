@@ -2,7 +2,6 @@ package homework_1
 
 import java.lang.IndexOutOfBoundsException
 import kotlinx.serialization.SerialName
-import java.lang.IndexOutOfBoundsException
 import kotlinx.serialization.Serializable
 
 /**
