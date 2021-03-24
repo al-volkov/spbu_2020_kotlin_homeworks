@@ -15,26 +15,38 @@ internal class PerformedCommandStorageTest {
         PushForward(1).execute(storage)
         PushBack(3).execute(storage)
         PushBack(4).execute(storage)
-        assertEquals(ArrayDeque(listOf(1, 2, 3, 4)), storage.arrayDeque)
+        MoveElement(0, 2).execute(storage)
+        MoveElement(1, 0).execute(storage)
+        PushForward(0).execute(storage)
+        PushBack(5).execute(storage)
         repeat(3) {
             storage.undo()
         }
-        assertEquals(ArrayDeque(listOf(2)), storage.arrayDeque)
-        storage.undo()
-        assertEquals(ArrayDeque<Int>(), storage.arrayDeque)
+        assertEquals(ArrayDeque(listOf(2, 3, 1, 4)), storage.arrayDeque)
     }
 
     @Test
-    fun serializationTest(@TempDir tempDir: Path) {
-        val pathToTemporaryFile = tempDir.resolve("testfile.json")
-        val firstStorage = PerformedCommandStorage()
-        PushForward(2).execute(firstStorage)
-        PushForward(1).execute(firstStorage)
-        PushBack(3).execute(firstStorage)
-        PushBack(4).execute(firstStorage)
-        firstStorage.serialize(pathToTemporaryFile.toString())
-        val secondStorage = PerformedCommandStorage()
-        secondStorage.deserialize(pathToTemporaryFile.toString())
-        assertEquals(firstStorage.arrayDeque, secondStorage.arrayDeque)
+    fun serializeTest(@TempDir tempDir: Path) {
+        val storage = PerformedCommandStorage()
+        val path = tempDir.resolve("testFile.json").toString()
+        PushForward(2).execute(storage)
+        PushForward(1).execute(storage)
+        PushBack(3).execute(storage)
+        PushBack(4).execute(storage)
+        MoveElement(0, 3).execute(storage)
+        MoveElement(2, 0).execute(storage)
+        MoveElement(1, 2).execute(storage)
+        storage.serialize(path)
+        assertEquals(
+            File(tempDir.resolve("testFile.json").toString()).readText(),
+            PerformedCommandStorageTest::class.java.getResource("expectedActions.json").readText()
+        )
+    }
+
+    @Test
+    fun deserializeTest(){
+        val storage = PerformedCommandStorage()
+        storage.deserialize(PerformedCommandStorageTest::class.java.getResource("testActions.json").path)
+        assertEquals(ArrayDeque(listOf(3, 5, 1)), storage.arrayDeque)
     }
 }
