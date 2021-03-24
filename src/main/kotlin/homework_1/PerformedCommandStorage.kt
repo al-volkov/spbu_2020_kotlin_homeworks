@@ -60,7 +60,6 @@ class PerformedCommandStorage {
         newFile.write(stringInJsonFormat)
         newFile.flush()
         newFile.close()
-
     }
 
     /**
