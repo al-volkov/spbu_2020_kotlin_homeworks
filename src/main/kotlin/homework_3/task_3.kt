@@ -1,13 +1,9 @@
 package homework_3
 
 import com.charleskorn.kaml.Yaml
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.junit.jupiter.api.Test
 import java.io.File
 
 /**
@@ -27,53 +23,50 @@ class FunctionName(
 @Serializable
 class InformationForTests(
     @SerialName("package name")
-    var packageName: String,
+    val packageName: String,
 
     @SerialName("class name")
-    var className: String,
+    val className: String,
 
     @SerialName("functions")
-    var functionNames: List<FunctionName>
+    val functionNames: List<FunctionName>
 )
 
-/**
- * Generates a function by name
- */
-fun generateFunctionForTests(functionName: String) = FunSpec.builder(functionName).addAnnotation(Test::class).build()
+class TestGenerator(private val pathToConfig: String) {
+    private var file: FileSpec
 
-/**
- * Generate class by name and containing functions
- */
-fun generateClassForTests(className: String, functionNames: List<FunctionName>): TypeSpec {
-    val newClass = TypeSpec.classBuilder(className).addModifiers(KModifier.INTERNAL)
-    for (i in functionNames) {
-        newClass.addFunction(generateFunctionForTests(i.name))
+    init {
+        val config = File(pathToConfig).readText()
+        val information = Yaml.default.decodeFromString(InformationForTests.serializer(), config)
+        val newFile = FileSpec.builder(information.packageName, "${information.className}Test")
+        newFile.addType(generateClassForTests("${information.className}Test", information.functionNames))
+        file = newFile.build()
     }
-    return newClass.build()
-}
 
-/**
- * Generates a file for tests
- * @param pathToConfig  path to the yaml file containing information about the file to be generated
- */
-fun generateFileForTests(pathToConfig: String): FileSpec {
-    val config = File(pathToConfig).readText()
-    val information = Yaml.default.decodeFromString(InformationForTests.serializer(), config)
-    information.className = "${information.className}Test"
-    val newFile = FileSpec.builder(information.packageName, information.className)
-    newFile.addType(generateClassForTests(information.className, information.functionNames))
-    return newFile.build()
-}
+    /**
+     * Generates a function by name
+     */
+    private fun generateFunctionForTests(functionName: String) =
+        FunSpec.builder(functionName).addAnnotation(ClassName("org.junit.jupiter.api", "Test")).build()
 
-/**
- * Generates a file for tests
- * @param pathToConfig  path to the yaml file containing information about the file to be generated
- * @param output path to the directory where the generated file will be placed
- */
-fun generateFileForTests(pathToConfig: String, output: String) {
-    generateFileForTests(pathToConfig).writeTo(File(output))
+    /**
+     * Generate class by name and containing functions
+     */
+    private fun generateClassForTests(className: String, functionNames: List<FunctionName>): TypeSpec {
+        val newClass = TypeSpec.classBuilder(className).addModifiers(KModifier.INTERNAL)
+        for (i in functionNames) {
+            newClass.addFunction(generateFunctionForTests(i.name))
+        }
+        return newClass.build()
+    }
+
+    fun writeTo(path: String) {
+        file.writeTo(File(path))
+    }
+
+    fun getString(): String = file.toString()
 }
 
 fun main() {
-    generateFileForTests("src/main/resources/testconfig.yaml", "src/main/resources")
+    TestGenerator("src/main/resources/testconfig.yaml").writeTo("src/main/resources/kotlin/homework_3")
 }

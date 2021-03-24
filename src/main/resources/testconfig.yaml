@@ -1,5 +1,5 @@
-package name: homework1
-class name: PerformedCommandStorage
+package name: somepackage
+class name: SomeClass
 functions:
-  - name: "forwardApply"
-  - name: "backwardApply"
+  - name: "doSomething"
+  - name: "doNothing"
