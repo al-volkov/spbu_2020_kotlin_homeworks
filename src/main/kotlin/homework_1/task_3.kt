@@ -16,7 +16,7 @@ fun main() {
     PushForward(number2).execute(testStorage1)
     testStorage1.print()
     PushForward(number1).execute(testStorage1)
-    testStorage1.print(
+    testStorage1.print()
     PushBack(number3).execute(testStorage1)
     testStorage1.print()
     PushBack(number4).execute(testStorage1)
