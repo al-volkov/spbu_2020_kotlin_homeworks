@@ -1,3 +1,4 @@
+@file:Suppress("MagicNumber")
 package homework_4
 
 import java.lang.IllegalArgumentException
