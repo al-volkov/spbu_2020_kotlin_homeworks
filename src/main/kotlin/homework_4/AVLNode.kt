@@ -1,30 +1,29 @@
+@file:Suppress("MagicNumber")
 package homework_4
 
-const val OUTWEIGHS_TO_THE_RIGHT = 2
-const val OUTWEIGHS_TO_THE_LEFT = -2
-
 class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
+    private val outweighsToTheRight = 2
+    private val outweighsToTheLeft = -2
+    private var leftChild: AVLNode<K, V>? = null
+    private var rightChild: AVLNode<K, V>? = null
+    private var height = 0
     val value: V
         get() {
             return pvalue
         }
-    private var leftChild: AVLNode<K, V>? = null
-    private var rightChild: AVLNode<K, V>? = null
-    private var height = 0
-
     fun balance(): AVLNode<K, V>? {
         leftChild = leftChild?.balance()
         this.updateHeight()
         rightChild = rightChild?.balance()
         this.updateHeight()
         return when {
-            this.getBalanceFactor() == OUTWEIGHS_TO_THE_RIGHT -> {
+            this.getBalanceFactor() == outweighsToTheRight -> {
                 if (rightChild?.getBalanceFactor() ?: 0 < 0) {
                     rightChild = rightChild?.rotateRight()
                 }
                 this.rotateLeft()
             }
-            this.getBalanceFactor() == OUTWEIGHS_TO_THE_LEFT -> {
+            this.getBalanceFactor() == outweighsToTheLeft -> {
                 if (leftChild?.getBalanceFactor() ?: 0 > 0) {
                     leftChild = leftChild?.rotateLeft()
                 }
@@ -97,24 +96,25 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
     }
 
     fun remove(key: K): AVLNode<K, V>? {
-        var result: AVLNode<K, V>? = null
-        when {
+        return when {
             key < this.key -> {
                 leftChild = leftChild?.remove(key)
+                this
             }
             key > this.key -> {
                 rightChild = rightChild?.remove(key)
+                this
             }
             else -> {
                 when {
                     leftChild == null -> {
-                        result = rightChild
+                        rightChild
                     }
                     rightChild == null -> {
-                        result = leftChild
+                        leftChild
                     }
                     else -> {
-                        val minimalNode: AVLNode<K, V> = rightChild?.min() ?: this
+                        val minimalNode: AVLNode<K, V> = rightChild?.findMin() ?: this
                         this.pvalue = minimalNode.pvalue
                         this.key = minimalNode.key
                         if (rightChild?.key == minimalNode.key) {
@@ -122,18 +122,15 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
                         } else {
                             rightChild?.removeMin(this.key)
                         }
+                        this.balance()
                     }
                 }
             }
         }
-        if (result == null) {
-            result = this.balance()
-        }
-        return result
     }
 
-    private fun min(): AVLNode<K, V> {
-        return leftChild?.min() ?: this
+    private fun findMin(): AVLNode<K, V> {
+        return leftChild?.findMin() ?: this
     }
 
     private fun removeMin(minKey: K) {
@@ -151,5 +148,23 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
 
     fun containsKey(key: K): Boolean {
         return this.getNode(key) != null
+    }
+
+    fun entries(entries: MutableSet<Map.Entry<K, V>>) {
+        entries.add(Entry(key, value))
+        leftChild?.entries(entries)
+        rightChild?.entries(entries)
+    }
+
+    fun keys(keys: MutableSet<K>) {
+        keys.add(key)
+        leftChild?.keys(keys)
+        rightChild?.keys(keys)
+    }
+
+    fun values(values: MutableSet<V>) {
+        values.add(value)
+        leftChild?.values(values)
+        rightChild?.values(values)
     }
 }

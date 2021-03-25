@@ -2,7 +2,6 @@ complexity:
   TooManyFunctions:
     ignorePrivate: true
 
-
 formatting:
   PackageName:
     active: false
