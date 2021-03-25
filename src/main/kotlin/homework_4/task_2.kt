@@ -30,16 +30,14 @@ fun interfaceLoop() {
             5 -> println(tree[getKey()])
             6 -> tree.put(getKey(), getValue())
             7 -> tree.remove(getKey())
-            8 -> tree.clear()
-            9 -> {
+            8 -> {
                 for (i in tree.entries) {
                     print("(${i.key},${i.value}) ")
                 }
                 println()
             }
-            10 -> println(tree.keys)
-            11 -> println(tree.values)
-            12 -> break
+            9 -> println(tree.keys)
+            10 -> println(tree.values)
             else -> throw IllegalArgumentException()
         }
         println("enter the number of the next operation")
@@ -56,11 +54,10 @@ fun usersInterface() {
                 "enter 5 to use get()\n" +
                 "enter 6 to use put()\n" +
                 "enter 7 to use remove()\n" +
-                "enter 8 to use clear()\n" +
-                "enter 9 to print entries\n" +
-                "enter 10 to print keys\n" +
-                "enter 11 to print values\n" +
-                "enter 12 to exit"
+                "enter 8 to print entries\n" +
+                "enter 9 to print keys\n" +
+                "enter 10 to print values\n" +
+                "enter anything else to exit"
     )
     interfaceLoop()
 }

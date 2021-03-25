@@ -1,10 +1,8 @@
 package homework_1
 
-
 import kotlinx.serialization.SerialName
 import java.lang.IndexOutOfBoundsException
 import kotlinx.serialization.Serializable
-
 
 /**
  * Moves an element from position [startingIndex] to position [finalIndex]
