@@ -1,4 +1,5 @@
 @file:Suppress("MagicNumber")
+
 package homework_4
 
 import java.lang.IllegalArgumentException
@@ -31,7 +32,7 @@ fun interfaceLoop() {
             7 -> tree.remove(getKey())
             8 -> tree.clear()
             9 -> {
-                for (i in tree.entries){
+                for (i in tree.entries) {
                     print("(${i.key},${i.value}) ")
                 }
                 println()
