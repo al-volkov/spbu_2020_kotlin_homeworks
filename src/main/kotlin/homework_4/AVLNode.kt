@@ -114,7 +114,7 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
                         leftChild
                     }
                     else -> {
-                        val minimalNode: AVLNode<K, V> = rightChild?.findMin() ?: this
+                        val minimalNode: AVLNode<K, V> = rightChild?.getMin() ?: this
                         this.pvalue = minimalNode.pvalue
                         this.key = minimalNode.key
                         if (rightChild?.key == minimalNode.key) {
@@ -129,8 +129,8 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
         }
     }
 
-    private fun findMin(): AVLNode<K, V> {
-        return leftChild?.findMin() ?: this
+    private fun getMin(): AVLNode<K, V> {
+        return leftChild?.getMin() ?: this
     }
 
     private fun removeMin(minKey: K) {
