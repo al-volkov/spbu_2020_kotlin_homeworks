@@ -1,0 +1,1 @@
+[{"type":"PushForward","value":2},{"type":"PushForward","value":1},{"type":"PushBack","value":3},{"type":"PushBack","value":4},{"type":"MoveElement","startingIndex":0,"finalIndex":3},{"type":"MoveElement","startingIndex":2,"finalIndex":0},{"type":"MoveElement","startingIndex":1,"finalIndex":2}]
