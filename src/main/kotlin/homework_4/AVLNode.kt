@@ -19,7 +19,7 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
                 }
                 this.rotateLeft()
             }
-            this.getBalanceFactor() < 1 -> {
+            this.getBalanceFactor() < -1 -> {
                 if (leftChild?.getBalanceFactor() ?: 0 > 0) {
                     leftChild = leftChild?.rotateLeft()
                 }

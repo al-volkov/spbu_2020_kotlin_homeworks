@@ -2,8 +2,6 @@
 
 package homework_4
 
-import java.lang.IllegalArgumentException
-
 fun getKey(): Int {
     val scan = java.util.Scanner(System.`in`)
     println("enter key")
@@ -16,30 +14,34 @@ fun getValue(): String {
     return scan.nextLine()
 }
 
+fun AVLTree<Int, String>.doAction(numberOfAction: Int): Boolean {
+    when (numberOfAction) {
+        1 -> println(this.size)
+        2 -> println(this.isEmpty())
+        3 -> println(this.containsKey(getKey()))
+        4 -> println(this.containsValue(getValue()))
+        5 -> println(this[getKey()])
+        6 -> this.put(getKey(), getValue())
+        7 -> this.remove(getKey())
+        8 -> {
+            for (i in this.entries) {
+                print("(${i.key},${i.value}) ")
+            }
+            println()
+        }
+        9 -> println(this.keys)
+        10 -> println(this.values)
+        else -> return false
+    }
+    return true
+}
+
 fun interfaceLoop() {
     val tree = AVLTree<Int, String>() // int and string are selected for example
     val scan = java.util.Scanner(System.`in`)
-    println("enter the number of the next operation")
+    println("\nenter the number of the next operation")
     var enteredNumber = scan.nextInt()
-    while (true) {
-        when (enteredNumber) {
-            1 -> println(tree.size)
-            2 -> println(tree.isEmpty())
-            3 -> println(tree.containsKey(getKey()))
-            4 -> println(tree.containsValue(getValue()))
-            5 -> println(tree[getKey()])
-            6 -> tree.put(getKey(), getValue())
-            7 -> tree.remove(getKey())
-            8 -> {
-                for (i in tree.entries) {
-                    print("(${i.key},${i.value}) ")
-                }
-                println()
-            }
-            9 -> println(tree.keys)
-            10 -> println(tree.values)
-            else -> break
-        }
+    while (tree.doAction(enteredNumber)) {
         println("enter the number of the next operation")
         enteredNumber = scan.nextInt()
     }
@@ -61,6 +63,7 @@ fun usersInterface() {
     )
     interfaceLoop()
 }
+
 
 fun main() {
     usersInterface()
