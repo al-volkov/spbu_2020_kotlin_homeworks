@@ -1,29 +1,25 @@
-@file:Suppress("MagicNumber")
 package homework_4
 
 class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
-    private val outweighsToTheRight = 2
-    private val outweighsToTheLeft = -2
     private var leftChild: AVLNode<K, V>? = null
     private var rightChild: AVLNode<K, V>? = null
     private var height = 0
     val value: V
-        get() {
-            return pvalue
-        }
+        get() = pvalue
+
     fun balance(): AVLNode<K, V>? {
         leftChild = leftChild?.balance()
         this.updateHeight()
         rightChild = rightChild?.balance()
         this.updateHeight()
         return when {
-            this.getBalanceFactor() == outweighsToTheRight -> {
+            this.getBalanceFactor() > 1 -> {
                 if (rightChild?.getBalanceFactor() ?: 0 < 0) {
                     rightChild = rightChild?.rotateRight()
                 }
                 this.rotateLeft()
             }
-            this.getBalanceFactor() == outweighsToTheLeft -> {
+            this.getBalanceFactor() < 1 -> {
                 if (leftChild?.getBalanceFactor() ?: 0 > 0) {
                     leftChild = leftChild?.rotateLeft()
                 }
@@ -129,9 +125,7 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
         }
     }
 
-    private fun getMin(): AVLNode<K, V> {
-        return leftChild?.getMin() ?: this
-    }
+    private fun getMin(): AVLNode<K, V> = leftChild?.getMin() ?: this
 
     private fun removeMin(minKey: K) {
         if (leftChild?.key == minKey) {
@@ -146,9 +140,7 @@ class AVLNode<K : Comparable<K>, V>(private var key: K, private var pvalue: V) {
             ?: false)
     }
 
-    fun containsKey(key: K): Boolean {
-        return this.getNode(key) != null
-    }
+    fun containsKey(key: K) = this.getNode(key) != null
 
     fun entries(entries: MutableSet<Map.Entry<K, V>>) {
         entries.add(Entry(key, value))

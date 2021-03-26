@@ -38,7 +38,7 @@ fun interfaceLoop() {
             }
             9 -> println(tree.keys)
             10 -> println(tree.values)
-            else -> throw IllegalArgumentException()
+            else -> break
         }
         println("enter the number of the next operation")
         enteredNumber = scan.nextInt()

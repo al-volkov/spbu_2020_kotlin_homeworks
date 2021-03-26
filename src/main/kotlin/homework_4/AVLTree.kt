@@ -22,17 +22,10 @@ class AVLTree<K : Comparable<K>, V> : Map<K, V> {
             return values.toSet()
         }
 
-    override fun containsKey(key: K): Boolean {
-        return root?.containsKey(key) ?: false
-    }
+    override fun containsKey(key: K) = root?.containsKey(key) ?: false
+    override fun containsValue(value: V) = root?.containsValue(value) ?: false
 
-    override fun containsValue(value: V): Boolean {
-        return root?.containsValue(value) ?: false
-    }
-
-    override fun get(key: K): V? {
-        return root?.getNode(key)?.value
-    }
+    override fun get(key: K) = root?.getNode(key)?.value
 
     override fun isEmpty() = root == null
 
