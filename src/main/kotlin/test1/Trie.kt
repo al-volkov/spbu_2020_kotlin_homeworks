@@ -65,14 +65,14 @@ class Trie {
     fun size() = size
 
     fun howManyStartWithPrefix(prefix: String): Int {
-        if (this.isEmpty()) {
-            return 0
+        return if (this.isEmpty()) {
+            0
         } else {
             var currentVertex = this.root
             for (character in prefix) {
                 currentVertex = currentVertex.edgesFromThisVertex[character] ?: return 0
             }
-            return currentVertex.numberOfPrefixes
+            currentVertex.numberOfPrefixes
         }
     }
 }
