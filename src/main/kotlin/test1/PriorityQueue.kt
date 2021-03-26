@@ -11,21 +11,21 @@ class PriorityQueue<E, K : Comparable<K>> {
     }
 
     fun peek(): E {
-        if (this.isEmpty()) {
+        if (this.list.isEmpty()) {
             throw NoSuchElementException("Queue is empty\n")
         }
         return list.last().element
     }
 
     fun remove() {
-        if (this.isEmpty()) {
+        if (this.list.isEmpty()) {
             throw NoSuchElementException("Queue is empty\n")
         }
         list.removeLast()
     }
 
-    fun rool() : E {
-        if (this.isEmpty()) {
+    fun rool(): E {
+        if (this.list.isEmpty()) {
             throw NoSuchElementException("Queue is empty\n")
         }
         return list.removeLast().element
