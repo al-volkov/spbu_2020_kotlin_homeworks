@@ -1,5 +1,7 @@
 package homework_5
 
+const val CRITICAL_LOAD_FACTOR = 0.7
+
 interface HashFunction<T> {
     fun getHash(key: T): Int
 }
@@ -46,7 +48,6 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
 
     private var size = 1
     private var numberOfElements = 0
-    private val criticalLoadFactor = 0.7
     private val loadFactor: Double
         get() = numberOfElements / size.toDouble()
     private var array: Array<Container<K, V>> = Array(size) { Container() }
@@ -71,7 +72,7 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
         val hash = hashFunction.getHash(key) % size
         return if (array[hash].add(newElement)) {
             ++numberOfElements
-            if (loadFactor >= criticalLoadFactor) {
+            if (loadFactor >= CRITICAL_LOAD_FACTOR) {
                 this.expand()
             }
             true
