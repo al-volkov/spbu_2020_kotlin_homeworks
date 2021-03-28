@@ -124,10 +124,10 @@ class AVLNode<K : Comparable<K>, V>(private val pkey: K, private var pvalue: V) 
         }
     }
 
-    fun containsValue(value: V): Boolean {
-        return (this.pvalue == value) || (leftChild?.containsValue(value) ?: false) || (rightChild?.containsValue(value)
-            ?: false)
-    }
+    fun containsValue(value: V): Boolean =
+        this.value == value ||
+        leftChild?.containsValue(value) ?: false ||
+        rightChild?.containsValue(value) ?: false
 
     fun entries(entries: MutableSet<AVLNode<K, V>>) {
         entries.add(this)
