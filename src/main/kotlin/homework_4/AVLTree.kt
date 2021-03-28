@@ -2,6 +2,7 @@ package homework_4
 
 class AVLTree<K : Comparable<K>, V> : Map<K, V> {
     private var root: AVLNode<K, V>? = null
+    private var psize = 0
     override val entries: Set<Map.Entry<K, V>>
         get() {
             val entries = mutableSetOf<AVLNode<K, V>>()
@@ -12,7 +13,8 @@ class AVLTree<K : Comparable<K>, V> : Map<K, V> {
         get() {
             return entries.map { it.key }.toSet()
         }
-    override var size = 0
+    override val size: Int
+        get() = psize
     override val values: Collection<V>
         get() {
             return entries.map { it.value }.toSet()
@@ -28,12 +30,12 @@ class AVLTree<K : Comparable<K>, V> : Map<K, V> {
     fun put(key: K, value: V): V? {
         return if (this.isEmpty()) {
             root = AVLNode(key, value)
-            ++size
+            ++psize
             null
         } else {
             val result = root?.put(key, value)
             if (result == null) {
-                ++size
+                ++psize
             }
             root = root?.balance()
             result
@@ -43,7 +45,7 @@ class AVLTree<K : Comparable<K>, V> : Map<K, V> {
     fun remove(key: K): V? {
         val previousValue: V? = this[key]
         if (previousValue != null) {
-            --size
+            --psize
         }
         root = root?.remove(key)
         this.root?.balance()
