@@ -47,7 +47,7 @@ internal class AVLTreeTest {
         val elements =
             setOf(Pair(1, "a"), Pair(2, "b"), Pair(3, "c"), Pair(4, "d"), Pair(5, "e"), Pair(6, "f"), Pair(7, "g"))
         elements.forEach { tree.put(it.first, it.second) }
-        assertEquals(elements.map { it.first }.toSet(), tree.entries.map { it.key }.toSet())
+        elements.forEach { assertTrue(tree.containsKey(it.first)) }
     }
 
     @Test
@@ -56,7 +56,7 @@ internal class AVLTreeTest {
         val elements =
             setOf(Pair(1, "a"), Pair(2, "b"), Pair(3, "c"), Pair(4, "d"), Pair(5, "e"), Pair(6, "f"), Pair(7, "g"))
         elements.forEach { tree.put(it.first, it.second) }
-        assertEquals(elements.map { it.first }.toSet(), tree.entries.map { it.key }.toSet())
+        elements.forEach { assertTrue(tree.containsValue(it.second)) }
     }
 
     @Test
