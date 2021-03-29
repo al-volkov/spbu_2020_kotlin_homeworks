@@ -91,7 +91,7 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
         }
     }
 
-    fun get(key: K): V? {
+    operator fun get(key: K): V? {
         val hash = hashFunction.getHash(key) % size
         return array[hash].get(key)
     }

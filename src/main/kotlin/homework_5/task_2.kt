@@ -4,6 +4,7 @@ import java.io.File
 import java.lang.IllegalArgumentException
 
 interface Action {
+    val name: String
     fun execute(table: HashTable<String, Double>)
 }
 
@@ -22,37 +23,57 @@ fun getValue(): Double {
 fun String.changeFormat(): List<String> = this.replace("(", "").replace(")", "").split(", ")
 
 class Add : Action {
+    override val name: String
+        get() = "add"
+
     override fun execute(table: HashTable<String, Double>) {
         table.add(getKey(), getValue())
     }
 }
 
 class Remove : Action {
+    override val name: String
+        get() = "remove"
+
     override fun execute(table: HashTable<String, Double>) {
         table.remove(getKey())
     }
 }
 
 class Get : Action {
+    override val name: String
+        get() = "get"
+
     override fun execute(table: HashTable<String, Double>) {
-        println(table.get(getKey()))
+        println(table[getKey()])
     }
 }
 
 class Contains : Action {
+    override val name: String
+        get() = "contains"
+
     override fun execute(table: HashTable<String, Double>) {
         println(table.contains(getKey()))
     }
 }
 
 class GetStatistics : Action {
+    override val name: String
+        get() = "get statistics"
+
     override fun execute(table: HashTable<String, Double>) {
         print(table.getStatistics())
     }
 }
 
-class FillFromFile(private val fileName: String) : Action {
+class FillFromFile : Action {
+    override val name: String
+        get() = "fill from file"
+
     override fun execute(table: HashTable<String, Double>) {
+        println("enter file name")
+        val fileName = java.util.Scanner(System.`in`).next()
         val input = File(FillFromFile::class.java.getResource(fileName).path).readText()
         val pairs = input.changeFormat()
         pairs.forEach {
@@ -63,6 +84,9 @@ class FillFromFile(private val fileName: String) : Action {
 }
 
 class ChangeHashFunction : Action {
+    override val name: String
+        get() = "change hash function"
+
     override fun execute(table: HashTable<String, Double>) {
         println("enter the number of function, which you want to use")
         when (java.util.Scanner(System.`in`).next()) {
@@ -76,18 +100,17 @@ class ChangeHashFunction : Action {
 
 fun interfaceLoop(table: HashTable<String, Double>) {
     while (true) {
-        println("enter the number of next action")
-        when (java.util.Scanner(System.`in`).next()) {
-            "1" -> Add().execute(table)
-            "2" -> Remove().execute(table)
-            "3" -> Get().execute(table)
-            "4" -> Contains().execute(table)
-            "5" -> GetStatistics().execute(table)
-            "6" -> {
-                println("enter file name")
-                FillFromFile(java.util.Scanner(System.`in`).next()).execute(table)
+        println("enter the name of next action")
+        when (java.util.Scanner(System.`in`).nextLine()) {
+            Add().name -> Add().execute(table)
+            Remove().name -> Remove().execute(table)
+            Get().name -> Get().execute(table)
+            Contains().name -> Contains().execute(table)
+            GetStatistics().name -> GetStatistics().execute(table)
+            FillFromFile().name -> {
+                FillFromFile().execute(table)
             }
-            "7" -> ChangeHashFunction().execute(table)
+            ChangeHashFunction().name -> ChangeHashFunction().execute(table)
             else -> break
         }
     }
@@ -95,13 +118,14 @@ fun interfaceLoop(table: HashTable<String, Double>) {
 
 fun usersInterface() {
     println(
-        "enter 1 to add element\n" +
-                "enter 2 to remove element\n" +
-                "enter 3 to get element\n" +
-                "enter 4 to check if element contained in table\n" +
-                "enter 5 to view statistics\n" +
-                "enter 6 to fill table from file\n" +
-                "enter 7 to change hash function\n" +
+        "enter action name to use it. Names\n" +
+                "add\n" +
+                "remove\n" +
+                "get\n" +
+                "contains\n" +
+                "get statistics\n" +
+                "read from file\n" +
+                "change hash function\n" +
                 "enter anything else to exit\n"
     )
     val table = HashTable<String, Double>(HashTable.DefaultHashFunction1())
