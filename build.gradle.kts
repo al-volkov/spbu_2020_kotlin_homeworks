@@ -46,6 +46,19 @@ detekt {
     buildUponDefaultConfig = true
 }
 
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events(
+            TestLogEvent.STANDARD_ERROR,
+            TestLogEvent.STARTED,
+            TestLogEvent.PASSED,
+            TestLogEvent.FAILED,
+            TestLogEvent.SKIPPED
+        )
+    }
+}
+
 tasks.withType<KotlinCompile>() {
     kotlinOptions {
         jvmTarget = "1.8"
