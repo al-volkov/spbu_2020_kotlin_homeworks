@@ -58,8 +58,8 @@ class TestGenerator(pathToConfig: String) {
      */
     private fun generateClassForTests(className: String, functionNames: List<FunctionName>): TypeSpec {
         val newClass = TypeSpec.classBuilder(className).addModifiers(KModifier.INTERNAL)
-        for (i in functionNames) {
-            newClass.addFunction(generateFunctionForTests(i.name))
+        for (functionName in functionNames) {
+            newClass.addFunction(generateFunctionForTests(functionName.name))
         }
         return newClass.build()
     }

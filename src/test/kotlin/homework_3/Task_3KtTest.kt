@@ -19,10 +19,9 @@ internal class Task_3KtTest {
     @MethodSource("inputData")
     @ParameterizedTest(name = "test {index}, {1}")
     fun generateFileForTests(folderName: String) {
-        assertEquals(
-            Task_3KtTest::class.java.getResource("$folderName/expected.kt").readText().replace("\r", ""),
-            TestGenerator(Task_3KtTest::class.java.getResource("$folderName/config.yaml").path).getString()
-                .replace("\r", "")
-        )
+        val expectedFile = Task_3KtTest::class.java.getResource("$folderName/expected.kt").readText().replace("\r", "")
+        val pathToConfig = Task_3KtTest::class.java.getResource("$folderName/config.yaml").path
+        val generatedFile = TestGenerator(pathToConfig).getString()
+        assertEquals(expectedFile, generatedFile)
     }
 }
