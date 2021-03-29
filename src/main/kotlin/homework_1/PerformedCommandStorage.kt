@@ -59,6 +59,7 @@ class PerformedCommandStorage {
         val newFile = FileWriter(path)
         newFile.write(stringInJsonFormat)
         newFile.flush()
+        newFile.close()
     }
 
     /**
