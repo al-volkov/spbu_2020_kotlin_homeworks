@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class HashTableTest {
     @Test
     fun addAndGetTest() {
-        val table = HashTable<String, Int>(HashTable.DefaultHashFunction1())
+        val table = HashTable<String, Int>(HashFunction.DefaultHashFunction1())
         val elements = listOf(Pair("a", 1), Pair("b", 2), Pair("c", 3), Pair("d", 4))
         elements.forEach { table.add(it.first, it.second) }
         elements.forEach { assertEquals(table[it.first], it.second) }
@@ -16,7 +16,7 @@ internal class HashTableTest {
 
     @Test
     fun containsTest() {
-        val table = HashTable<String, Int>(HashTable.DefaultHashFunction1())
+        val table = HashTable<String, Int>(HashFunction.DefaultHashFunction1())
         val elements = listOf(Pair("a", 1), Pair("b", 2), Pair("c", 3), Pair("d", 4))
         elements.forEach { table.add(it.first, it.second) }
         elements.forEach { assertTrue(table.contains(it.first)) }
@@ -24,7 +24,7 @@ internal class HashTableTest {
 
     @Test
     fun removeTest() {
-        val table = HashTable<String, Int>(HashTable.DefaultHashFunction1())
+        val table = HashTable<String, Int>(HashFunction.DefaultHashFunction1())
         val elements = listOf(Pair("a", 1), Pair("b", 2), Pair("c", 3), Pair("d", 4))
         elements.forEach { table.add(it.first, it.second) }
         table.remove("a")

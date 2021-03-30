@@ -1,12 +1,10 @@
 package homework_5
 
-const val CRITICAL_LOAD_FACTOR = 0.7
-
-interface HashFunction<T> {
-    fun getHash(key: T): Int
-}
-
 class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
+    companion object {
+        const val CRITICAL_LOAD_FACTOR = 0.7
+    }
+
     private data class Element<K, V>(val key: K, val value: V)
 
     private class Container<K, V> {
@@ -18,12 +16,11 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
             get() = listOfElements
 
         fun add(element: Element<K, V>): Boolean {
-            return if (this.contains(element.key)) {
-                false
-            } else {
-                listOfElements.add(element)
-                true
+            if (this.contains(element.key)) {
+                return false
             }
+            listOfElements.add(element)
+            return true
         }
 
         fun contains(key: K): Boolean {
@@ -32,12 +29,11 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
         }
 
         fun remove(key: K): Boolean {
-            return if (!this.contains(key)) {
-                false
-            } else {
-                listOfElements.removeAll { it.key == key }
-                true
+            if (!this.contains(key)) {
+                return false
             }
+            listOfElements.removeAll { it.key == key }
+            return true
         }
 
         fun get(key: K): V? {
@@ -58,8 +54,8 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
 
     private fun updateHashTable() {
         val newArray: Array<Container<K, V>> = Array(size) { Container() }
-        for (container in array) {
-            for (element in container.elements) {
+        array.forEach { container ->
+            container.elements.forEach { element ->
                 val hash = hashFunction.getHash(element.key) % (size)
                 newArray[hash].add(element)
             }
@@ -70,25 +66,24 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
     fun add(key: K, value: V): Boolean {
         val newElement = Element(key, value)
         val hash = hashFunction.getHash(key) % size
-        return if (array[hash].add(newElement)) {
-            ++numberOfElements
-            if (loadFactor >= CRITICAL_LOAD_FACTOR) {
-                this.expand()
-            }
-            true
-        } else {
-            false
+        if (!array[hash].add(newElement)) {
+            return false
         }
+        ++numberOfElements
+        if (loadFactor >= Companion.CRITICAL_LOAD_FACTOR) {
+            this.expand()
+        }
+        return true
+
     }
 
     fun remove(key: K): Boolean {
         val hash = hashFunction.getHash(key) % size
-        return if (array[hash].remove(key)) {
-            --numberOfElements
-            true
-        } else {
-            false
+        if (!array[hash].remove(key)) {
+            return false
         }
+        --numberOfElements
+        return true
     }
 
     operator fun get(key: K): V? {
@@ -118,37 +113,5 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
     fun changeHashFunction(newHashFunction: HashFunction<K>) {
         hashFunction = newHashFunction
         updateHashTable()
-    }
-
-    class DefaultHashFunction1 : HashFunction<String> {
-        override fun getHash(key: String): Int {
-            var hash = 0
-            for (character in key) {
-                hash *= 2
-                hash += (character - 'a')
-            }
-            return hash
-        }
-    }
-
-    class DefaultHashFunction2 : HashFunction<String> {
-        override fun getHash(key: String): Int {
-            var hash = 0
-            for (character in key.reversed()) {
-                hash *= 2
-                hash += (character - 'a')
-            }
-            return hash
-        }
-    }
-
-    class DefaultHashFunction3 : HashFunction<String> {
-        override fun getHash(key: String): Int {
-            var hash = 0
-            for (character in key.reversed()) {
-                hash += (character - 'a')
-            }
-            return hash
-        }
     }
 }
