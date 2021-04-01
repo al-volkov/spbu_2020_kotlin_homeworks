@@ -5,57 +5,22 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
         const val CRITICAL_LOAD_FACTOR = 0.7
     }
 
-    private data class Element<K, V>(val key: K, val value: V)
-
-    private class Container<K, V> {
-        private val listOfElements: MutableList<Element<K, V>> = mutableListOf()
-
-        val size
-            get() = listOfElements.size
-        val elements
-            get() = listOfElements
-
-        fun add(element: Element<K, V>): Boolean {
-            if (this.contains(element.key)) {
-                return false
-            }
-            listOfElements.add(element)
-            return true
-        }
-
-        fun contains(key: K): Boolean {
-            listOfElements.forEach { if (it.key == key) return true }
-            return false
-        }
-
-        fun remove(key: K): Boolean {
-            if (!this.contains(key)) {
-                return false
-            }
-            listOfElements.removeAll { it.key == key }
-            return true
-        }
-
-        fun get(key: K): V? {
-            listOfElements.forEach { if (it.key == key) return it.value }
-            return null
-        }
-    }
+    private data class Element<K, V>(val key: K, var value: V)
 
     private var size = 1
     private var numberOfElements = 0
     private val loadFactor: Double
         get() = numberOfElements / size.toDouble()
-    private var array: Array<Container<K, V>> = Array(size) { Container() }
+    private var array: Array<MutableList<Element<K, V>>> = Array(size) { mutableListOf() }
     private fun expand() {
         size *= 2
         updateHashTable()
     }
 
     private fun updateHashTable() {
-        val newArray: Array<Container<K, V>> = Array(size) { Container() }
-        array.forEach { container ->
-            container.elements.forEach { element ->
+        val newArray: Array<MutableList<Element<K, V>>> = Array(size) { mutableListOf() }
+        array.forEach { list ->
+            list.forEach { element ->
                 val hash = hashFunction.getHash(element.key) % (size)
                 newArray[hash].add(element)
             }
@@ -63,37 +28,52 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
         array = newArray
     }
 
-    fun add(key: K, value: V): Boolean {
-        val newElement = Element(key, value)
+    fun add(key: K, value: V): V? {
+        val oldValue: V?
         val hash = hashFunction.getHash(key) % size
-        if (!array[hash].add(newElement)) {
-            return false
+        val list = array[hash]
+        if (list.any { it.key == key }) {
+            val element = list.first { it.key == key }
+            oldValue = element.value
+            if (oldValue != value) {
+                element.value = value
+            }
+        } else {
+            list.add(Element(key, value))
+            oldValue = null
+            ++numberOfElements
         }
-        ++numberOfElements
-        if (loadFactor >= Companion.CRITICAL_LOAD_FACTOR) {
+        if (loadFactor >= CRITICAL_LOAD_FACTOR) {
             this.expand()
         }
-        return true
-
+        return oldValue
     }
 
-    fun remove(key: K): Boolean {
+    fun remove(key: K): V? {
         val hash = hashFunction.getHash(key) % size
-        if (!array[hash].remove(key)) {
-            return false
+        val list = array[hash]
+        if (list.any { it.key == key }) {
+            val element = list.first { it.key == key }
+            val oldValue = element.value
+            list.remove(element)
+            --numberOfElements
+            return oldValue
         }
-        --numberOfElements
-        return true
+        return null
     }
 
     operator fun get(key: K): V? {
         val hash = hashFunction.getHash(key) % size
-        return array[hash].get(key)
+        val list = array[hash]
+        if (list.any { it.key == key }) {
+            return list.first { it.key == key }.value
+        }
+        return null
     }
 
     fun contains(key: K): Boolean {
         val hash = hashFunction.getHash(key) % size
-        return array[hash].contains(key)
+        return array[hash].any { it.key == key }
     }
 
     fun getStatistics(): String {

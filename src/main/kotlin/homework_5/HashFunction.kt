@@ -1,5 +1,7 @@
 package homework_5
 
+import kotlin.math.abs
+
 interface HashFunction<T> {
     fun getHash(key: T): Int
 }
@@ -11,7 +13,7 @@ class DefaultHashFunction1 : HashFunction<String> {
             hash *= 2
             hash += (character - 'a')
         }
-        return hash
+        return abs(hash)
     }
 }
 
@@ -22,7 +24,7 @@ class DefaultHashFunction2 : HashFunction<String> {
             hash *= 2
             hash += (character - 'a')
         }
-        return hash
+        return abs(hash)
     }
 }
 
@@ -32,6 +34,6 @@ class DefaultHashFunction3 : HashFunction<String> {
         for (character in key.reversed()) {
             hash += (character - 'a')
         }
-        return hash
+        return abs(hash)
     }
 }
