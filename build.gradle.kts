@@ -22,7 +22,22 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.7.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
+    implementation("com.squareup:kotlinpoet:1.7.2")
+    implementation("com.charleskorn.kaml:kaml:0.28.3")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.14.2")
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events(
+            TestLogEvent.STANDARD_ERROR,
+            TestLogEvent.STARTED,
+            TestLogEvent.PASSED,
+            TestLogEvent.FAILED,
+            TestLogEvent.SKIPPED
+        )
+    }
 }
 
 detekt {

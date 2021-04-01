@@ -1,7 +1,7 @@
 package homework_1
 
-import kotlinx.serialization.SerialName
 import java.lang.IndexOutOfBoundsException
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -99,6 +99,6 @@ class MoveElement(private val startingIndex: Int, private val finalIndex: Int) :
      * @param storage The [PerformedCommandStorage] we work with
      */
     override fun undo(storage: PerformedCommandStorage) {
-        storage.arrayDeque.moveElement(finalIndex, startingIndex)
+      storage.arrayDeque.moveElement(finalIndex, startingIndex)
     }
 }

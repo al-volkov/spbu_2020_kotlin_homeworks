@@ -1,0 +1,5 @@
+package name: somepackage
+class name: SomeClass
+functions:
+  - name: "doSomething"
+  - name: "doNothing"
