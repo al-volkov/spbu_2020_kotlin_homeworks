@@ -9,9 +9,9 @@ interface HashFunction<T> {
 class DefaultHashFunction1 : HashFunction<String> {
     override fun getHash(key: String): Int {
         var hash = 0
-        for (character in key) {
+        key.forEach {
             hash *= 2
-            hash += (character - 'a')
+            hash += (it - 'a')
         }
         return abs(hash)
     }
@@ -20,9 +20,9 @@ class DefaultHashFunction1 : HashFunction<String> {
 class DefaultHashFunction2 : HashFunction<String> {
     override fun getHash(key: String): Int {
         var hash = 0
-        for (character in key.reversed()) {
+        key.reversed().forEach {
             hash *= 2
-            hash += (character - 'a')
+            hash += (it - 'a')
         }
         return abs(hash)
     }
@@ -31,9 +31,7 @@ class DefaultHashFunction2 : HashFunction<String> {
 class DefaultHashFunction3 : HashFunction<String> {
     override fun getHash(key: String): Int {
         var hash = 0
-        for (character in key.reversed()) {
-            hash += (character - 'a')
-        }
+        key.reversed().forEach { hash += (it - 'a') }
         return abs(hash)
     }
 }
