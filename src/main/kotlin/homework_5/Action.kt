@@ -3,6 +3,8 @@ package homework_5
 import java.io.File
 import java.lang.IllegalArgumentException
 
+val actions = setOf(Add(), Remove(), Get(), Contains(), GetStatistics(), FillFromFile(), ChangeHashFunction())
+
 interface Action {
     val name: String
     fun execute(table: HashTable<String, Double>)
