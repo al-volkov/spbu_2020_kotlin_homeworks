@@ -20,6 +20,7 @@ fun interfaceLoop(table: HashTable<String, Double>) {
 fun usersInterface() {
     println("enter action name to use it. Names:")
     actions.forEach { println(it.name) }
+    println("enter anything else to exit")
     val table = HashTable<String, Double>(DefaultHashFunction1())
     interfaceLoop(table)
 }
