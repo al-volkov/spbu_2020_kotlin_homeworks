@@ -32,10 +32,10 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
         val oldValue: V?
         val hash = hashFunction.getHash(key) % size
         val list = array[hash]
-        if (list.any { it.key == key }) {
-            val element = list.first { it.key == key }
+        val element = list.find { it.key == key }
+        if (element != null) {
             oldValue = element.value
-            if (oldValue != value) {
+            if (value != oldValue) {
                 element.value = value
             }
         } else {
@@ -52,23 +52,18 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
     fun remove(key: K): V? {
         val hash = hashFunction.getHash(key) % size
         val list = array[hash]
-        if (list.any { it.key == key }) {
-            val element = list.first { it.key == key }
-            val oldValue = element.value
+        val element = list.find { it.key == key }
+        if (element != null) {
             list.remove(element)
             --numberOfElements
-            return oldValue
         }
-        return null
+        return element?.value
     }
 
     operator fun get(key: K): V? {
         val hash = hashFunction.getHash(key) % size
         val list = array[hash]
-        if (list.any { it.key == key }) {
-            return list.first { it.key == key }.value
-        }
-        return null
+        return list.find { it.key == key }?.value
     }
 
     fun contains(key: K): Boolean {

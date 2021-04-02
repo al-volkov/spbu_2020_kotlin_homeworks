@@ -1,28 +1,17 @@
 package homework_5
 
+import utils.changeFormat
+import utils.getKey
+import utils.getValue
 import java.io.File
 import java.lang.IllegalArgumentException
 
-val actions = setOf(Add(), Remove(), Get(), Contains(), GetStatistics(), FillFromFile(), ChangeHashFunction())
+val actions = listOf(Add(), Remove(), Get(), Contains(), GetStatistics(), FillFromFile(), ChangeHashFunction())
 
 interface Action {
     val name: String
     fun execute(table: HashTable<String, Double>)
 }
-
-fun getKey(): String {
-    val scan = java.util.Scanner(System.`in`)
-    println("enter key")
-    return scan.nextLine()
-}
-
-fun getValue(): Double {
-    val scan = java.util.Scanner(System.`in`)
-    println("enter value")
-    return scan.nextDouble()
-}
-
-fun String.changeFormat(): List<String> = this.replace("(", "").replace(")", "").split(", ")
 
 class Add : Action {
     override val name: String
