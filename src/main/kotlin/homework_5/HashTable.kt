@@ -29,18 +29,16 @@ class HashTable<K, V>(private var hashFunction: HashFunction<K>) {
     }
 
     fun add(key: K, value: V): V? {
-        val oldValue: V?
         val hash = hashFunction.getHash(key) % size
         val list = array[hash]
         val element = list.find { it.key == key }
+        val oldValue = element?.value
         if (element != null) {
-            oldValue = element.value
-            if (value != oldValue) {
+            if (element.value != value) {
                 element.value = value
             }
         } else {
             list.add(Element(key, value))
-            oldValue = null
             ++numberOfElements
         }
         if (loadFactor >= CRITICAL_LOAD_FACTOR) {
