@@ -47,7 +47,7 @@ fun createDataset1(maxNumberOfElements: Int): XYDataset {
     val mergeMt2Time = LongArray(maxNumberOfElements / STEP) { 0 }
     val mergeMt4Time = LongArray(maxNumberOfElements / STEP) { 0 }
     val array = Array(NUMBER_OF_FUNCTIONS) { intArrayOf() }
-    for (index in 1 until maxNumberOfElements/ STEP) {
+    for (index in 1 until maxNumberOfElements / STEP) {
         array[0] = IntArray(index * STEP) { it }
         array[0].shuffle()
         for (i in 1 until NUMBER_OF_FUNCTIONS) {
@@ -63,7 +63,7 @@ fun createDataset1(maxNumberOfElements: Int): XYDataset {
         array[2].mergeSortMt2()
         mergeMt2Time[index] = System.nanoTime() - mergeMt2Time[index]
         mergeMt4Time[index] = System.nanoTime()
-        array[3].mergeSortMt4()
+        array[NUMBER_OF_FUNCTIONS - 1].mergeSortMt4()
         mergeMt4Time[index] = System.nanoTime() - mergeMt4Time[index]
     }
     val xySeriesCollection = XYSeriesCollection()
