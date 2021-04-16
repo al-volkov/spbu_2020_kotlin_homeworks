@@ -31,8 +31,6 @@ jobs:
             distribution: 'adopt'
             java-version: '11'
 
-      - uses: actions/checkout@v2
-
       - name: Run build
         run: ./gradlew build
 
