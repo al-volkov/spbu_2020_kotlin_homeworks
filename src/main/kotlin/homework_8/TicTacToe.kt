@@ -1,20 +1,21 @@
 package homework_8
 
-import javafx.beans.property.SimpleStringProperty
-import javafx.scene.control.Button
 import javafx.scene.layout.VBox
-import tornadofx.*
-import tornadofx.Stylesheet.Companion.button
-import tornadofx.Stylesheet.Companion.line
-import tornadofx.Stylesheet.Companion.root
-import tornadofx.Stylesheet.Companion.rowSelection
+import tornadofx.Controller
+import tornadofx.App
+import tornadofx.View
+import tornadofx.text
+import tornadofx.gridpane
+import tornadofx.row
+import tornadofx.button
+import tornadofx.action
 
+const val SIZE = 3
 
-class TicTacToe : App(GameView::class) {
-}
+class TicTacToe : App(GameView::class)
 
 class GameController : Controller() {
-    private val fields = Array(3) { CharArray(3) { ' ' } }
+    private val fields = Array(SIZE) { CharArray(SIZE) { ' ' } }
     var lastMove = 0
     fun changeField(row: Int, column: Int) {
         if (lastMove == 0) {
@@ -41,10 +42,8 @@ class GameView : View("Tic Tac Toe") {
                     row {
                         for (j in 0 until 3) {
                             button() {
-                                val row = i
-                                val column = j
                                 id = "$i$j"
-                                action { controller.changeField(row, column) }
+                                action { controller.changeField(i, j) }
                             }
                         }
                     }
