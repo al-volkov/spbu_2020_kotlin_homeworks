@@ -38,9 +38,9 @@ class GameView : View("Tic Tac Toe") {
     init {
         root.apply {
             gridpane {
-                for (i in 0 until 3) {
+                for (i in 0 until SIZE) {
                     row {
-                        for (j in 0 until 3) {
+                        for (j in 0 until SIZE) {
                             button() {
                                 id = "$i$j"
                                 action { controller.changeField(i, j) }
