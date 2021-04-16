@@ -3,10 +3,11 @@ import java.net.URL
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
     id("io.gitlab.arturbosch.detekt") version "1.15.0"
-    kotlin("plugin.serialization") version "1.4.31"
-    id("org.jetbrains.dokka") version "1.4.20"
+    kotlin("plugin.serialization") version "1.4.32"
+    id("org.jetbrains.dokka") version "1.4.30"
+    id("org.openjfx.javafxplugin") version "0.0.8"
     application
 }
 
@@ -19,12 +20,21 @@ repositories {
 }
 
 dependencies {
+    implementation ("org.jetbrains.kotlin:kotlin-reflect:1.4.32")
     testImplementation(platform("org.junit:junit-bom:5.7.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
     implementation("com.squareup:kotlinpoet:1.7.2")
     implementation("com.charleskorn.kaml:kaml:0.28.3")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.14.2")
+    implementation("no.tornado:tornadofx:1.7.20")
+    implementation("org.openjfx:javafx-base:11.0.2")
+    implementation("org.openjfx:javafx:11.0.2")
+    implementation("org.openjfx:javafx-controls:11.0.2")
+}
+
+javafx {
+    modules("javafx.controls")
 }
 
 tasks.test {
