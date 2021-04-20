@@ -13,6 +13,7 @@ internal class MergeSortKtTest {
             Arguments.of(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), intArrayOf(6, 9, 1, 8, 5, 3, 4, 2, 7, 10)),
             Arguments.of(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), intArrayOf(9, 6, 7, 10, 4, 2, 8, 3, 1, 5)),
             Arguments.of(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), intArrayOf(5, 6, 7, 2, 3, 8, 1, 10, 9, 4)),
+            Arguments.of(emptyList<Int>(), IntArray(0))
         )
     }
 
