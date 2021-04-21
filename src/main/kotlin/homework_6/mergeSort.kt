@@ -25,14 +25,14 @@ fun IntArray.mergeMT(
     right1: Int,
     left2: Int,
     right2: Int,
-    A: IntArray,
+    resultArray: IntArray,
     left3: Int,
     numberOfThreads: Int = 1
 ) {
     val n1 = right1 - left1 + 1
     val n2 = right2 - left2 + 1
     if (n1 < n2) {
-        this.mergeMT(left2, right2, left1, right1, A, left3)
+        this.mergeMT(left2, right2, left1, right1, resultArray, left3)
         return
     }
     if (n1 == 0) {
@@ -41,17 +41,17 @@ fun IntArray.mergeMT(
         val mid1 = (left1 + right1) / 2
         val mid2 = this.binarySearch(this[mid1], left2, right2)
         val mid3 = left3 + (mid1 - left1) + (mid2 - left2)
-        A[mid3] = this[mid1]
+        resultArray[mid3] = this[mid1]
         if (numberOfThreads <= 1) {
-            this.mergeMT(left1, mid1 - 1, left2, mid2 - 1, A, left3)
-            this.mergeMT(mid1 + 1, right1, mid2, right2, A, mid3 + 1)
+            this.mergeMT(left1, mid1 - 1, left2, mid2 - 1, resultArray, left3)
+            this.mergeMT(mid1 + 1, right1, mid2, right2, resultArray, mid3 + 1)
         } else {
             val numberOfThreadsForLeftPart = numberOfThreads / 2
             val numberOfThreadsForRightPart = numberOfThreads - numberOfThreadsForLeftPart
             val firstThread =
-                Thread { this.mergeMT(left1, mid1 - 1, left2, mid2 - 1, A, left3, numberOfThreadsForLeftPart) }
+                Thread { this.mergeMT(left1, mid1 - 1, left2, mid2 - 1, resultArray, left3, numberOfThreadsForLeftPart) }
             val secondThread =
-                Thread { this.mergeMT(mid1 + 1, right1, mid2, right2, A, mid3 + 1, numberOfThreadsForRightPart) }
+                Thread { this.mergeMT(mid1 + 1, right1, mid2, right2, resultArray, mid3 + 1, numberOfThreadsForRightPart) }
             firstThread.start()
             secondThread.start()
             firstThread.join()
