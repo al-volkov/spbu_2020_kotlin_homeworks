@@ -1,6 +1,5 @@
 package homework_7
 
-import homework_7.asyncMergeSort
 import kotlinx.coroutines.runBlocking
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.ChartPanel
