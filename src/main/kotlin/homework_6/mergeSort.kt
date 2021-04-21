@@ -49,9 +49,29 @@ fun IntArray.mergeMT(
             val numberOfThreadsForLeftPart = numberOfThreads / 2
             val numberOfThreadsForRightPart = numberOfThreads - numberOfThreadsForLeftPart
             val firstThread =
-                Thread { this.mergeMT(left1, mid1 - 1, left2, mid2 - 1, resultArray, left3, numberOfThreadsForLeftPart) }
+                Thread {
+                    this.mergeMT(
+                        left1,
+                        mid1 - 1,
+                        left2,
+                        mid2 - 1,
+                        resultArray,
+                        left3,
+                        numberOfThreadsForLeftPart
+                    )
+                }
             val secondThread =
-                Thread { this.mergeMT(mid1 + 1, right1, mid2, right2, resultArray, mid3 + 1, numberOfThreadsForRightPart) }
+                Thread {
+                    this.mergeMT(
+                        mid1 + 1,
+                        right1,
+                        mid2,
+                        right2,
+                        resultArray,
+                        mid3 + 1,
+                        numberOfThreadsForRightPart
+                    )
+                }
             firstThread.start()
             secondThread.start()
             firstThread.join()
