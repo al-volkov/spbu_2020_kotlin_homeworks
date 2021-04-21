@@ -9,11 +9,14 @@ import org.jfree.data.xy.XYSeries
 import org.jfree.data.xy.XYDataset
 import org.jfree.data.xy.XYSeriesCollection
 import java.awt.Dimension
-
-const val HEIGHT = 1000
-const val WIDTH = 1000
+import kotlin.random.Random
 
 class DrawPlot(numberOfThreads: Int, maxNumberOfElements: Int, step: Int) {
+    private companion object {
+        const val HEIGHT = 1000
+        const val WIDTH = 1000
+    }
+
     init {
         val dataset = createDataset(numberOfThreads, maxNumberOfElements, step)
         val chart = ChartFactory.createXYLineChart(
@@ -37,11 +40,12 @@ class DrawPlot(numberOfThreads: Int, maxNumberOfElements: Int, step: Int) {
         return xySeries
     }
 
-    fun measureTime(numberOfThreads: Int, numberOfElements: Int): Long {
-        val array = IntArray(numberOfElements) { it }
+    private fun measureTime(numberOfThreads: Int, numberOfElements: Int): Long {
+        val array = IntArray(numberOfElements) { Random.nextInt() }
         array.shuffle()
+        val temporaryArray = IntArray(numberOfElements) { 0 }
         var time = System.nanoTime()
-        array.mergeSortMT(numberOfThreads = numberOfThreads)
+        array.mergeSortMT(resultArray = temporaryArray, numberOfThreads = numberOfThreads)
         time = System.nanoTime() - time
         return time
     }

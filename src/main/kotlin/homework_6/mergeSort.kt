@@ -1,63 +1,108 @@
+@file:Suppress("LongParameterList") // for fun mergeMT
+
 package homework_6
 
-fun IntArray.merge(left: Int, middle: Int, right: Int) {
-    var it1 = 0
-    var it2 = 0
-    val temporaryArray = IntArray(right - left + 1) { 0 }
-    while ((left + it1 <= middle) && (middle + 1 + it2 <= right)) {
-        if (this[left + it1] < this[middle + 1 + it2]) {
-            temporaryArray[it1 + it2] = this[left + it1]
-            ++it1
+fun IntArray.binarySearch(value: Int, left: Int, right: Int): Int {
+    var low = left
+    var high = kotlin.math.max(left, right + 1)
+    var mid: Int
+    while (low < high) {
+        mid = (low + high) / 2
+        if (value <= this[mid]) {
+            high = mid
         } else {
-            temporaryArray[it1 + it2] = this[middle + 1 + it2]
-            ++it2
+            low = mid + 1
         }
     }
-    while (left + it1 <= middle) {
-        temporaryArray[it1 + it2] = this[left + it1]
-        ++it1
-    }
-    while (middle + 1 + it2 <= right) {
-        temporaryArray[it1 + it2] = this[middle + 1 + it2]
-        ++it2
-    }
-    for (i in temporaryArray.indices) {
-        this[left + i] = temporaryArray[i]
-    }
+    return high
 }
 
 /**
- * single-threaded
+ * multi-thread merge
  */
-fun IntArray.mergeSort(left: Int = 0, right: Int = this.lastIndex) {
-    if (left >= right) {
+fun IntArray.mergeMT(
+    left1: Int,
+    right1: Int,
+    left2: Int,
+    right2: Int,
+    A: IntArray,
+    left3: Int,
+    numberOfThreads: Int = 1
+) {
+    val n1 = right1 - left1 + 1
+    val n2 = right2 - left2 + 1
+    if (n1 < n2) {
+        this.mergeMT(left2, right2, left1, right1, A, left3)
         return
     }
-    val middle = (left + right) / 2
-    this.mergeSort(left, middle)
-    this.mergeSort(middle + 1, right)
-    this.merge(left, middle, right)
-}
-
-/**
- * multi-threaded
- */
-fun IntArray.mergeSortMT(left: Int = 0, right: Int = this.lastIndex, numberOfThreads: Int = 0) {
-    if (left >= right) {
+    if (n1 == 0) {
         return
-    }
-    if (numberOfThreads <= 1) {
-        this.mergeSort(left, right)
     } else {
-        val middle = (left + right) / 2
-        val numberOfThreadsForLeftPart = numberOfThreads / 2
-        val numberOfThreadsForRightPart = numberOfThreads - numberOfThreadsForLeftPart
-        val firstThread = Thread { this.mergeSortMT(left, middle, numberOfThreadsForLeftPart) }
-        val secondThread = Thread { this.mergeSortMT(middle + 1, right, numberOfThreadsForRightPart) }
-        firstThread.start()
-        secondThread.start()
-        firstThread.join()
-        secondThread.join()
-        this.merge(left, middle, right)
+        val mid1 = (left1 + right1) / 2
+        val mid2 = this.binarySearch(this[mid1], left2, right2)
+        val mid3 = left3 + (mid1 - left1) + (mid2 - left2)
+        A[mid3] = this[mid1]
+        if (numberOfThreads <= 1) {
+            this.mergeMT(left1, mid1 - 1, left2, mid2 - 1, A, left3)
+            this.mergeMT(mid1 + 1, right1, mid2, right2, A, mid3 + 1)
+        } else {
+            val numberOfThreadsForLeftPart = numberOfThreads / 2
+            val numberOfThreadsForRightPart = numberOfThreads - numberOfThreadsForLeftPart
+            val firstThread =
+                Thread { this.mergeMT(left1, mid1 - 1, left2, mid2 - 1, A, left3, numberOfThreadsForLeftPart) }
+            val secondThread =
+                Thread { this.mergeMT(mid1 + 1, right1, mid2, right2, A, mid3 + 1, numberOfThreadsForRightPart) }
+            firstThread.start()
+            secondThread.start()
+            firstThread.join()
+            secondThread.join()
+        }
+    }
+}
+
+/**
+ * multi-threaded with multi thread merge
+ */
+fun IntArray.mergeSortMT(
+    left1: Int = 0,
+    right1: Int = lastIndex,
+    resultArray: IntArray,
+    left2: Int = 0,
+    numberOfThreads: Int = 1
+) {
+    when (val n = right1 - left1 + 1) {
+        0 -> return
+        1 -> {
+            resultArray[left2] = this[left1]
+        }
+        else -> {
+            val temporaryArray = IntArray(n) { 0 }
+            val mid = (left1 + right1) / 2
+            val newMid = mid - left1
+            if (numberOfThreads <= 1) {
+                this.mergeSortMT(left1, mid, temporaryArray, 0)
+                this.mergeSortMT(mid + 1, right1, temporaryArray, newMid + 1)
+            } else {
+                val numberOfThreadsForLeftPart = numberOfThreads / 2
+                val numberOfThreadsForRightPart = numberOfThreads - numberOfThreadsForLeftPart
+                val firstThread =
+                    Thread { this.mergeSortMT(left1, mid, temporaryArray, 0, numberOfThreadsForLeftPart) }
+                val secondThread =
+                    Thread {
+                        this.mergeSortMT(
+                            mid + 1,
+                            right1,
+                            temporaryArray,
+                            newMid + 1,
+                            numberOfThreadsForRightPart
+                        )
+                    }
+                firstThread.start()
+                secondThread.start()
+                firstThread.join()
+                secondThread.join()
+            }
+            temporaryArray.mergeMT(0, newMid, newMid + 1, n - 1, resultArray, left2, numberOfThreads)
+        }
     }
 }

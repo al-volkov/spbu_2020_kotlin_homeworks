@@ -1,6 +1,5 @@
 package homework_6
 
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -18,17 +17,11 @@ internal class MergeSortKtTest {
     }
 
     @MethodSource("inputData")
-    @ParameterizedTest(name = "mergeSort test {index}, {1}")
-    fun mergeSortTest(expectedList: List<Int>, actualArray: IntArray) {
-        actualArray.mergeSort()
-        assertEquals(expectedList, actualArray.toList())
-    }
-
-    @MethodSource("inputData")
     @ParameterizedTest(name = "mergeSortMt test {index}, {1}")
-    fun mergeSortMtTest(expectedList: List<Int>, actualArray: IntArray) {
+    fun mergeSortMTTest(expectedList: List<Int>, notSortedArray: IntArray) {
         for (numberOfThreads in 1..10) {
-            actualArray.mergeSortMT(numberOfThreads = numberOfThreads)
+            val actualArray = IntArray(notSortedArray.size) { 0 }
+            notSortedArray.mergeSortMT(resultArray = actualArray, numberOfThreads = numberOfThreads)
             try {
                 assert(expectedList == actualArray.toList())
             } catch (e: AssertionError) {
