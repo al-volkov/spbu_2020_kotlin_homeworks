@@ -131,7 +131,15 @@ object MergeSort {
                     val numberOfThreadsForLeftPart = numberOfThreads / 2
                     val numberOfThreadsForRightPart = numberOfThreads - numberOfThreadsForLeftPart
                     val firstThread =
-                        Thread { this.mergeSortMTRecursive(leftBound1, mid, temporaryArray, 0, numberOfThreadsForLeftPart) }
+                        Thread {
+                            this.mergeSortMTRecursive(
+                                leftBound1,
+                                mid,
+                                temporaryArray,
+                                0,
+                                numberOfThreadsForLeftPart
+                            )
+                        }
                     val secondThread =
                         Thread {
                             this.mergeSortMTRecursive(
@@ -147,7 +155,15 @@ object MergeSort {
                     firstThread.join()
                     secondThread.join()
                 }
-                temporaryArray.mergeMT(0, newMid, newMid + 1, numberOfElements - 1, resultArray, leftBound2, numberOfThreads)
+                temporaryArray.mergeMT(
+                    0,
+                    newMid,
+                    newMid + 1,
+                    numberOfElements - 1,
+                    resultArray,
+                    leftBound2,
+                    numberOfThreads
+                )
             }
         }
     }
