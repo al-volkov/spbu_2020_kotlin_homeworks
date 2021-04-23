@@ -1,6 +1,6 @@
-@file:Suppress("LongMethod") // temporary
 package homework_7
 
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -14,6 +14,68 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
         val startColumn: Int,
         val finalColumn: Int
     ) {
+        companion object {
+            suspend fun recursiveLaunch(
+                firstMatrixPartition: Array<Array<SubMatrix>>,
+                secondMatrixPartition: Array<Array<SubMatrix>>,
+                resultMatrixPartition: Array<Array<SubMatrix>>,
+                temporaryMatrixPartition: Array<Array<SubMatrix>>
+            ) {
+                coroutineScope {
+                    val listOfCoroutines = mutableListOf<Job>()
+                    listOfCoroutines.add(launch {
+                        firstMatrixPartition[0][0].multiplySubMatrix(
+                            secondMatrixPartition[0][0],
+                            resultMatrixPartition[0][0]
+                        )
+                    })
+                    listOfCoroutines.add(launch {
+                        firstMatrixPartition[0][0].multiplySubMatrix(
+                            secondMatrixPartition[0][1],
+                            resultMatrixPartition[0][1]
+                        )
+                    })
+                    listOfCoroutines.add(launch {
+                        firstMatrixPartition[1][0].multiplySubMatrix(
+                            secondMatrixPartition[0][0],
+                            resultMatrixPartition[1][0]
+                        )
+                    })
+                    listOfCoroutines.add(launch {
+                        firstMatrixPartition[1][0].multiplySubMatrix(
+                            secondMatrixPartition[0][1],
+                            resultMatrixPartition[1][1]
+                        )
+                    })
+                    listOfCoroutines.add(launch {
+                        firstMatrixPartition[0][1].multiplySubMatrix(
+                            secondMatrixPartition[1][0],
+                            temporaryMatrixPartition[0][0]
+                        )
+                    })
+                    listOfCoroutines.add(launch {
+                        firstMatrixPartition[0][1].multiplySubMatrix(
+                            secondMatrixPartition[1][1],
+                            temporaryMatrixPartition[0][1]
+                        )
+                    })
+                    listOfCoroutines.add(launch {
+                        firstMatrixPartition[1][1].multiplySubMatrix(
+                            secondMatrixPartition[1][0],
+                            temporaryMatrixPartition[1][0]
+                        )
+                    })
+                    listOfCoroutines.add(launch {
+                        firstMatrixPartition[1][1].multiplySubMatrix(
+                            secondMatrixPartition[1][1],
+                            temporaryMatrixPartition[1][1]
+                        )
+                    })
+                    listOfCoroutines.forEach { it.join() }
+                }
+            }
+        }
+
         private val numberOfRows: Int
             get() = finalRow - startRow + 1
         private val numberOfColumns: Int
@@ -87,67 +149,12 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
                     val secondMatrixPartition = secondMatrix.partition()
                     val resultMatrixPartition = resultMatrix.partition()
                     val temporaryMatrixPartition = temporaryMatrix.partition()
-                    coroutineScope {
-                        val coroutine1 = launch {
-                            thisMatrixPartition[0][0].multiplySubMatrix(
-                                secondMatrixPartition[0][0],
-                                resultMatrixPartition[0][0]
-                            )
-                        }
-                        val coroutine2 = launch {
-                            thisMatrixPartition[0][0].multiplySubMatrix(
-                                secondMatrixPartition[0][1],
-                                resultMatrixPartition[0][1]
-                            )
-                        }
-                        val coroutine3 = launch {
-                            thisMatrixPartition[1][0].multiplySubMatrix(
-                                secondMatrixPartition[0][0],
-                                resultMatrixPartition[1][0]
-                            )
-                        }
-                        val coroutine4 = launch {
-                            thisMatrixPartition[1][0].multiplySubMatrix(
-                                secondMatrixPartition[0][1],
-                                resultMatrixPartition[1][1]
-                            )
-                        }
-                        val coroutine5 = launch {
-                            thisMatrixPartition[0][1].multiplySubMatrix(
-                                secondMatrixPartition[1][0],
-                                temporaryMatrixPartition[0][0]
-                            )
-                        }
-                        val coroutine6 = launch {
-                            thisMatrixPartition[0][1].multiplySubMatrix(
-                                secondMatrixPartition[1][1],
-                                temporaryMatrixPartition[0][1]
-                            )
-                        }
-                        val coroutine7 = launch {
-                            thisMatrixPartition[1][1].multiplySubMatrix(
-                                secondMatrixPartition[1][0],
-                                temporaryMatrixPartition[1][0]
-                            )
-                        }
-                        val coroutine8 = launch {
-                            thisMatrixPartition[1][1].multiplySubMatrix(
-                                secondMatrixPartition[1][1],
-                                temporaryMatrixPartition[1][1]
-                            )
-                        }
-                        val listOfCoroutines = listOf(
-                            coroutine1,
-                            coroutine2,
-                            coroutine3,
-                            coroutine4,
-                            coroutine5,
-                            coroutine6,
-                            coroutine7,
-                            coroutine8
-                        )
-                        listOfCoroutines.forEach { it.join() }
-                    }
+                    recursiveLaunch(
+                        thisMatrixPartition,
+                        secondMatrixPartition,
+                        resultMatrixPartition,
+                        temporaryMatrixPartition
+                    )
                     resultMatrix += temporaryMatrix
                 }
             }
@@ -204,6 +211,12 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
                 )
             }
         }
+    }
+
+    operator fun times(secondMatrix: Matrix): Matrix {
+        val newMatrix = Matrix(this.numberOfRows, secondMatrix.numberOfColumns)
+        this.multiplyMatrix(secondMatrix, newMatrix)
+        return newMatrix
     }
 
     override fun toString(): String {

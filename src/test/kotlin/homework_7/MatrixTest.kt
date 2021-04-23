@@ -153,8 +153,6 @@ internal class MatrixTest {
     @MethodSource("inputData")
     @ParameterizedTest(name = "multiplyMatrix test {index}, {1}")
     fun multiplyMatrixTest(firstMatrix: Matrix, secondMatrix: Matrix, expectedMatrix: Matrix) {
-        val actualMatrix = Matrix(expectedMatrix.numberOfRows, expectedMatrix.numberOfColumns)
-        firstMatrix.multiplyMatrix(secondMatrix, actualMatrix)
-        assertEquals(expectedMatrix, actualMatrix)
+        assertEquals(expectedMatrix, firstMatrix * secondMatrix)
     }
 }
