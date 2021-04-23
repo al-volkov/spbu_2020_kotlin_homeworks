@@ -5,7 +5,6 @@ import org.jfree.chart.ChartFactory
 import org.jfree.chart.ChartPanel
 import org.jfree.chart.JFreeChart
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer
-import org.jfree.chart.title.TextTitle
 import org.jfree.chart.ui.ApplicationFrame
 import org.jfree.data.xy.XYSeries
 import org.jfree.data.xy.XYDataset
