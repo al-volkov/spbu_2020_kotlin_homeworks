@@ -26,7 +26,8 @@ class DrawPlot(numbersOfThreads: List<Int>, maxNumberOfElements: Int, step: Int)
             Color.BLUE,
             Color.CYAN,
             Color.MAGENTA,
-            Color.PINK
+            Color.PINK,
+            Color.DARK_GRAY
         )
     }
 
