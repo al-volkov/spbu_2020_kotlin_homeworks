@@ -1,5 +1,8 @@
 package test2
 
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.io.File
@@ -74,8 +77,10 @@ class WeatherDemonstrator {
         val fileNameFull = "src/main/resources/test2/$fileName"
         val file = File(fileNameFull)
         val cities = file.readLines()
-        for (cityName in cities) {
-            getWeather(cityName)
+        runBlocking {
+            for (cityName in cities) {
+                launch { getWeather(cityName) }
+            }
         }
     }
 
