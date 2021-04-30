@@ -71,7 +71,7 @@ data class Wind(
 )
 
 class WeatherDemonstrator {
-    private val apiKey = File("api-keys.env").readText()
+    private val apiKey = "f9a74dc6f27fe76bfaa42c623aa29f98"
     fun getWeatherFromFile(fileName: String) {
         val fileNameFull = "src/main/resources/test2/$fileName"
         val file = File(fileNameFull)
