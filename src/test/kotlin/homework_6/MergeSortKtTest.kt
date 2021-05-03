@@ -1,25 +1,22 @@
 package homework_6
 
 import homework_6.MergeSort.mergeSortMT
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import kotlin.random.Random
 
 internal class MergeSortKtTest {
     companion object {
-        private fun getRandomArray(size: Int): IntArray {
-            val array = IntArray(size) { it }
-            array.shuffle()
-            return array
-        }
+        private fun getRandomArray(size: Int) = IntArray(size) { Random.nextInt() }
 
         @JvmStatic
         fun inputData(): List<Arguments> {
             val list = mutableListOf<Arguments>()
             for (numberOfThreads in 1..10) {
                 for (arraySize in 0..100) {
-                    list.add(Arguments.of(List(arraySize) { it }, getRandomArray(arraySize), numberOfThreads))
+                    list.add(Arguments.of(getRandomArray(arraySize), numberOfThreads))
                 }
             }
             return list
@@ -28,8 +25,11 @@ internal class MergeSortKtTest {
 
     @MethodSource("inputData")
     @ParameterizedTest(name = "mergeSortMt test {index}, {1}")
-    fun mergeSortMTTest(expectedList: List<Int>, actualArray: IntArray, numberOfThreads: Int) {
+    fun mergeSortMTTest(arrayToSort: IntArray, numberOfThreads: Int) {
+        val expectedArray = arrayToSort.clone()
+        expectedArray.sort()
+        val actualArray = arrayToSort.clone()
         actualArray.mergeSortMT(numberOfThreads)
-        assertEquals(expectedList, actualArray.toList())
+        assertArrayEquals(expectedArray, actualArray)
     }
 }
