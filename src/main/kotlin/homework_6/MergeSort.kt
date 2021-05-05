@@ -34,14 +34,14 @@ object MergeSort {
      * [subarray1] first subarray
      * [subarray2] second subarray
      * [resultArray] an array where the elements will be placed
-     * [leftBound3] the index from which the elements will be placed in [resultArray]
+     * [leftBoundOfSubarrayToPutElements] the index from which the elements will be placed in [resultArray]
      * [numberOfThreads] number of threads
      */
     private fun IntArray.mergeMT(
         subarray1: Subarray,
         subarray2: Subarray,
         resultArray: IntArray,
-        leftBound3: Int,
+        leftBoundOfSubarrayToPutElements: Int,
         numberOfThreads: Int = 1
     ) {
         val numberOfElementsInFirstSubarray = subarray1.rightBound - subarray1.leftBound + 1
@@ -50,7 +50,7 @@ object MergeSort {
             this.mergeMT(
                 Subarray(subarray2.leftBound, subarray2.rightBound),
                 Subarray(subarray1.leftBound, subarray1.rightBound),
-                resultArray, leftBound3
+                resultArray, leftBoundOfSubarrayToPutElements
             )
             return
         }
@@ -60,14 +60,14 @@ object MergeSort {
             val mid1 = (subarray1.leftBound + subarray1.rightBound) / 2 // middle of the first subarray
             val mid2 =
                 this.binarySearch(this[mid1], subarray2.leftBound, subarray2.rightBound) // see binarySearch comments
-            val mid3 = leftBound3 + (mid1 - subarray1.leftBound) +
+            val mid3 = leftBoundOfSubarrayToPutElements + (mid1 - subarray1.leftBound) +
                     (mid2 - subarray2.leftBound) // index in resultArray, see next line
             resultArray[mid3] = this[mid1]
             if (numberOfThreads <= 1) {
                 this.mergeMT(
                     Subarray(subarray1.leftBound, mid1 - 1),
                     Subarray(subarray2.leftBound, mid2 - 1),
-                    resultArray, leftBound3
+                    resultArray, leftBoundOfSubarrayToPutElements
                 )
                 this.mergeMT(
                     Subarray(mid1 + 1, subarray1.rightBound),
@@ -82,7 +82,7 @@ object MergeSort {
                         this.mergeMT(
                             Subarray(subarray1.leftBound, mid1 - 1),
                             Subarray(subarray2.leftBound, mid2 - 1),
-                            resultArray, leftBound3, numberOfThreadsForLeftPart
+                            resultArray, leftBoundOfSubarrayToPutElements, numberOfThreadsForLeftPart
                         )
                     }
                 val secondThread =
@@ -106,19 +106,19 @@ object MergeSort {
      * works multithreaded
      * [subarray] subarray that will be sorted
      * [resultArray] an array where the elements will be placed
-     * [leftBound2] the index from which the elements will be placed
+     * [leftBoundOfSubarrayToPutElements] the index from which the elements will be placed
      * [numberOfThreads] number of threads
      */
     private fun IntArray.mergeSortMTRecursive(
         subarray: Subarray,
         resultArray: IntArray,
-        leftBound2: Int,
+        leftBoundOfSubarrayToPutElements: Int,
         numberOfThreads: Int
     ) {
         when (val numberOfElements = subarray.rightBound - subarray.leftBound + 1) {
             0 -> return
             1 -> {
-                resultArray[leftBound2] = this[subarray.leftBound]
+                resultArray[leftBoundOfSubarrayToPutElements] = this[subarray.leftBound]
             }
             else -> {
                 val temporaryArray = IntArray(numberOfElements) { 0 }
@@ -163,7 +163,7 @@ object MergeSort {
                         numberOfElements - 1
                     ),
                     resultArray,
-                    leftBound2,
+                    leftBoundOfSubarrayToPutElements,
                     numberOfThreads
                 )
             }
