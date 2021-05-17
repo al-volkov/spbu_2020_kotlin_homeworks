@@ -1,5 +1,8 @@
 package homework_6
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+
 object MergeSort {
     private data class Subarray(val leftBound: Int, val rightBound: Int)
 
@@ -176,6 +179,151 @@ object MergeSort {
     fun IntArray.mergeSortMT(numberOfThreads: Int) {
         val temporaryArray = IntArray(this.size) { 0 }
         this.mergeSortMTRecursive(Subarray(0, this.lastIndex), temporaryArray, 0, numberOfThreads)
+        temporaryArray.copyInto(this)
+    }
+
+    /**
+     * merges two subarrays into [resultArray]
+     * works asynchronously
+     * [subarray1] first subarray
+     * [subarray2] second subarray
+     * [resultArray] an array where the elements will be placed
+     * [leftBoundOfSubarrayToPutElements] the index from which the elements will be placed in [resultArray]
+     * [numberOfCoroutines] number of coroutines
+     */
+    private fun IntArray.mergeAsync(
+        subarray1: Subarray,
+        subarray2: Subarray,
+        resultArray: IntArray,
+        leftBoundOfSubarrayToPutElements: Int,
+        numberOfCoroutines: Int = 1
+    ) {
+        val numberOfElementsInFirstSubarray = subarray1.rightBound - subarray1.leftBound + 1
+        val numberOfElementsInSecondSubarray = subarray2.rightBound - subarray2.leftBound + 1
+        if (numberOfElementsInFirstSubarray < numberOfElementsInSecondSubarray) {
+            this.mergeAsync(
+                Subarray(subarray2.leftBound, subarray2.rightBound),
+                Subarray(subarray1.leftBound, subarray1.rightBound),
+                resultArray, leftBoundOfSubarrayToPutElements
+            )
+            return
+        }
+        if (numberOfElementsInFirstSubarray == 0) {
+            return
+        } else {
+            val mid1 = (subarray1.leftBound + subarray1.rightBound) / 2 // middle of the first subarray
+            val mid2 =
+                this.binarySearch(this[mid1], subarray2.leftBound, subarray2.rightBound) // see binarySearch comments
+            val mid3 = leftBoundOfSubarrayToPutElements + (mid1 - subarray1.leftBound) +
+                    (mid2 - subarray2.leftBound) // index in resultArray, see next line
+            resultArray[mid3] = this[mid1]
+            if (numberOfCoroutines <= 1) {
+                this.mergeAsync(
+                    Subarray(subarray1.leftBound, mid1 - 1),
+                    Subarray(subarray2.leftBound, mid2 - 1),
+                    resultArray, leftBoundOfSubarrayToPutElements
+                )
+                this.mergeAsync(
+                    Subarray(mid1 + 1, subarray1.rightBound),
+                    Subarray(mid2, subarray2.rightBound),
+                    resultArray, mid3 + 1
+                )
+            } else {
+                val numberOfCoroutinesForLeftPart = numberOfCoroutines / 2
+                val numberOfCoroutinesForRightPart = numberOfCoroutines - numberOfCoroutinesForLeftPart
+                val array = this // because this cannot be used in runBlocking
+                runBlocking {
+                    launch {
+                        array.mergeAsync(
+                            Subarray(subarray1.leftBound, mid1 - 1),
+                            Subarray(subarray2.leftBound, mid2 - 1),
+                            resultArray, leftBoundOfSubarrayToPutElements, numberOfCoroutinesForLeftPart
+                        )
+                    }
+                    launch {
+                        array.mergeAsync(
+                            Subarray(mid1 + 1, subarray1.rightBound),
+                            Subarray(mid2, subarray2.rightBound),
+                            resultArray, mid3 + 1, numberOfCoroutinesForRightPart
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * sorts the array (or subarray) and puts the result in another array
+     * works asynchronously
+     * [subarray] subarray that will be sorted
+     * [resultArray] an array where the elements will be placed
+     * [leftBoundOfSubarrayToPutElements] the index from which the elements will be placed
+     * [numberOfCoroutines] number of coroutines
+     */
+    private fun IntArray.mergeSortAsyncRecursive(
+        subarray: Subarray,
+        resultArray: IntArray,
+        leftBoundOfSubarrayToPutElements: Int,
+        numberOfCoroutines: Int
+    ) {
+        when (val numberOfElements = subarray.rightBound - subarray.leftBound + 1) {
+            0 -> return
+            1 -> {
+                resultArray[leftBoundOfSubarrayToPutElements] = this[subarray.leftBound]
+            }
+            else -> {
+                val temporaryArray = IntArray(numberOfElements) { 0 }
+                val mid = (subarray.leftBound + subarray.rightBound) / 2
+                val newMid = mid - subarray.leftBound
+                if (numberOfCoroutines <= 1) {
+                    this.mergeSortAsyncRecursive(Subarray(subarray.leftBound, mid), temporaryArray, 0, 1)
+                    this.mergeSortAsyncRecursive(Subarray(mid + 1, subarray.rightBound), temporaryArray, newMid + 1, 1)
+                } else {
+                    val numberOfCoroutinesForLeftPart = numberOfCoroutines / 2
+                    val numberOfCoroutinesForRightPart = numberOfCoroutines - numberOfCoroutinesForLeftPart
+                    val array = this // because this cannot be used in runBlocking
+                    runBlocking {
+                        launch {
+                            array.mergeSortAsyncRecursive(
+                                Subarray(subarray.leftBound, mid),
+                                temporaryArray,
+                                0,
+                                numberOfCoroutinesForLeftPart
+                            )
+                        }
+                        launch {
+                            array.mergeSortAsyncRecursive(
+                                Subarray(mid + 1, subarray.rightBound),
+                                temporaryArray,
+                                newMid + 1,
+                                numberOfCoroutinesForRightPart
+                            )
+                        }
+                    }
+                }
+                temporaryArray.mergeAsync(
+                    Subarray(
+                        0,
+                        newMid
+                    ),
+                    Subarray(
+                        newMid + 1,
+                        numberOfElements - 1
+                    ),
+                    resultArray,
+                    leftBoundOfSubarrayToPutElements,
+                    numberOfCoroutines
+                )
+            }
+        }
+    }
+
+    /**
+     * Calls the recursive function
+     * */
+    fun IntArray.mergeSortAsync(numberOfCoroutines: Int) {
+        val temporaryArray = IntArray(this.size) { 0 }
+        this.mergeSortAsyncRecursive(Subarray(0, this.lastIndex), temporaryArray, 0, numberOfCoroutines)
         temporaryArray.copyInto(this)
     }
 }
