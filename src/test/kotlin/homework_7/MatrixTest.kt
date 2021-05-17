@@ -146,6 +146,73 @@ internal class MatrixTest {
                         intArrayOf(10557, 10758, 10959, 11160, 11361, 11562)
                     )
                 )
+            ),
+            Arguments.of(
+                Matrix(
+                    arrayOf(
+                        intArrayOf(1, 4, 9),
+                        intArrayOf(0, 1, 0),
+                        intArrayOf(15, 0, 7)
+                    )
+                ), Matrix(
+                    arrayOf(
+                        intArrayOf(1),
+                        intArrayOf(0),
+                        intArrayOf(1)
+                    )
+                ), Matrix(
+                    arrayOf(
+                        intArrayOf(10),
+                        intArrayOf(0),
+                        intArrayOf(22)
+                    )
+                )
+            ),
+            Arguments.of(
+                Matrix(
+                    arrayOf(
+                        intArrayOf(0),
+                        intArrayOf(0),
+                        intArrayOf(0)
+                    )
+                ),
+                Matrix(
+                    arrayOf(
+                        intArrayOf(0, 0, 0)
+                    )
+                ),
+                Matrix(
+                    arrayOf(
+                        intArrayOf(0, 0, 0),
+                        intArrayOf(0, 0, 0),
+                        intArrayOf(0, 0, 0)
+                    )
+                )
+            ),
+            Arguments.of(
+                Matrix(
+                    arrayOf(
+                        intArrayOf(-4, 0, 1),
+                        intArrayOf(9, -2, -31),
+                        intArrayOf(20, 6, 4),
+                        intArrayOf(9, -5, 0)
+                    )
+                ),
+                Matrix(
+                    arrayOf(
+                        intArrayOf(62, 95, 23, 0),
+                        intArrayOf(0, -78, 4, 56),
+                        intArrayOf(-49, 0, 10, 0)
+                    )
+                ),
+                Matrix(
+                    arrayOf(
+                        intArrayOf(-297, -380, -82, 0),
+                        intArrayOf(2077, 1011, -111, -112),
+                        intArrayOf(1044, 1432, 524, 336),
+                        intArrayOf(558, 1245, 187, -280)
+                    )
+                )
             )
         )
     }
