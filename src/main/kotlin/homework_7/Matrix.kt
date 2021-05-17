@@ -7,12 +7,24 @@ import kotlinx.coroutines.runBlocking
 import java.lang.IllegalArgumentException
 
 class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
+
+    constructor(array: Array<IntArray>) : this(array.size, array[0].size) {
+        for (row in 0 until this.numberOfRows) {
+            require(array[row].size == this.numberOfColumns) {
+                throw IllegalArgumentException("this array cannot be interpreted as a matrix")
+            }
+            for (column in 0 until this.numberOfColumns) {
+                this[row, column] = array[row][column]
+            }
+        }
+    }
+
     class SubMatrix(
-        val mainMatrix: Matrix,
-        val startRow: Int,
-        val finalRow: Int,
-        val startColumn: Int,
-        val finalColumn: Int
+        private val mainMatrix: Matrix,
+        private val startRow: Int,
+        private val finalRow: Int,
+        private val startColumn: Int,
+        private val finalColumn: Int
     ) {
         companion object {
             suspend fun recursiveLaunch(
@@ -76,17 +88,15 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
             }
         }
 
-        private val numberOfRows: Int
-            get() = finalRow - startRow + 1
-        private val numberOfColumns: Int
-            get() = finalColumn - startColumn + 1
+        private val numberOfRows = finalRow - startRow + 1
+        private val numberOfColumns = finalColumn - startColumn + 1
 
         operator fun plusAssign(secondMatrix: SubMatrix) {
             for (i in startRow..finalRow) {
                 for (j in startColumn..finalColumn) {
                     this.mainMatrix.array[i][j] +=
                         secondMatrix.mainMatrix.array[
-                                i - startRow + secondMatrix.startRow][j - startColumn + secondMatrix.startRow
+                                i - startRow + secondMatrix.startRow][j - startColumn + secondMatrix.startColumn
                         ]
                 }
             }
@@ -173,19 +183,6 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
         }
     }
 
-    constructor(array: Array<IntArray>) : this(array.size, array[0].size) {
-        for (row in array) {
-            require(row.size == this.numberOfColumns) {
-                throw IllegalArgumentException("this array cannot be interpreted as a matrix")
-            }
-        }
-        for (i in 0 until this.numberOfRows) {
-            for (j in 0 until this.numberOfColumns) {
-                this[i, j] = array[i][j]
-            }
-        }
-    }
-
     private val array = Array(numberOfRows) { IntArray(numberOfColumns) { 0 } }
 
     init {
@@ -195,51 +192,51 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
     }
 
     operator fun get(i: Int, j: Int) = array[i][j]
+
     operator fun set(i: Int, j: Int, value: Int) = run { array[i][j] = value }
 
     private fun fullSubMatrix(): SubMatrix = SubMatrix(this, 0, numberOfRows - 1, 0, numberOfColumns - 1)
-    fun multiplyMatrix(secondMatrix: Matrix, resultMatrix: Matrix) {
+
+    operator fun times(secondMatrix: Matrix): Matrix {
         require(this.numberOfColumns == secondMatrix.numberOfRows) {
             throw IllegalArgumentException("these matrices cannot be multiplied")
         }
-        val matrix = this
+        val resultMatrix = Matrix(this.numberOfRows, secondMatrix.numberOfColumns)
+        val matrix = this.fullSubMatrix()
         runBlocking {
             launch {
-                matrix.fullSubMatrix().multiplySubMatrix(
+                matrix.multiplySubMatrix(
                     secondMatrix.fullSubMatrix(),
                     resultMatrix.fullSubMatrix()
                 )
             }
         }
-    }
-
-    operator fun times(secondMatrix: Matrix): Matrix {
-        val newMatrix = Matrix(this.numberOfRows, secondMatrix.numberOfColumns)
-        this.multiplyMatrix(secondMatrix, newMatrix)
-        return newMatrix
+        return resultMatrix
     }
 
     override fun toString(): String {
-        var string = ""
-        for (i in 0 until numberOfRows - 1) {
-            for (j in 0 until numberOfColumns) {
-                string += this[i, j]
-                string += " "
-            }
-            string += "\n"
+        val listOfRows = mutableListOf<String>()
+        for (row in 0 until numberOfRows) {
+            listOfRows += array[row].joinToString(" ")
         }
-        for (i in 0 until numberOfColumns) {
-            string += this[numberOfRows - 1, i]
-            string += " "
-        }
-        return string
+        return listOfRows.joinToString("\n")
     }
 
-    override operator fun equals(other: Any?): Boolean = this.toString() == other.toString()
-    override fun hashCode(): Int {
-        var result = numberOfRows
-        result = 31 * result + numberOfColumns
-        result = 31 * result + array.contentDeepHashCode()
+    override operator fun equals(other: Any?): Boolean {
+        if (other !is Matrix ||
+            other.numberOfRows != this.numberOfRows ||
+            other.numberOfColumns != this.numberOfColumns
+        ) {
+            return false
+        }
+        var result = true
+        for (row in 0 until numberOfRows) {
+            for (column in 0 until numberOfColumns) {
+                if (this[row, column] != other[row, column]) {
+                    result = false
+                }
+            }
+        }
         return result
     }
 }
