@@ -1,7 +1,6 @@
 package homework_7
 
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.lang.IllegalArgumentException
@@ -43,7 +42,6 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
                 temporaryMatrixPartition: Array<Array<SubMatrix>>
             ) {
                 runBlocking {
-                    val listOfCoroutines = mutableListOf<Job>()
                     val listOfTemplates = mutableListOf<MultiplicationTemplate>()
                     listOfTemplates += MultiplicationTemplate(0, 0, 0, 0, 0, 0)
                     listOfTemplates += MultiplicationTemplate(0, 0, 0, 1, 0, 1)
@@ -70,7 +68,6 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
                             )
                         }
                     }
-                    listOfCoroutines.forEach { it.join() }
                 }
             }
         }
