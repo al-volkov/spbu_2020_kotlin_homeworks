@@ -36,13 +36,13 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
                 val resultMatrixIndex2: Int
             )
 
-            suspend fun recursiveLaunch(
+            fun recursiveLaunch(
                 firstMatrixPartition: Array<Array<SubMatrix>>,
                 secondMatrixPartition: Array<Array<SubMatrix>>,
                 resultMatrixPartition: Array<Array<SubMatrix>>,
                 temporaryMatrixPartition: Array<Array<SubMatrix>>
             ) {
-                coroutineScope {
+                runBlocking {
                     val listOfCoroutines = mutableListOf<Job>()
                     val listOfTemplates = mutableListOf<MultiplicationTemplate>()
                     listOfTemplates += MultiplicationTemplate(0, 0, 0, 0, 0, 0)
@@ -50,12 +50,12 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
                     listOfTemplates += MultiplicationTemplate(1, 0, 0, 0, 1, 0)
                     listOfTemplates += MultiplicationTemplate(1, 0, 0, 1, 1, 1)
                     listOfTemplates.forEach {
-                        listOfCoroutines.add(launch {
+                        launch {
                             firstMatrixPartition[it.firstArrayIndex1][it.firstArrayIndex2].multiplySubMatrix(
                                 secondMatrixPartition[it.secondArrayIndex1][it.secondArrayIndex2],
                                 resultMatrixPartition[it.resultMatrixIndex1][it.resultMatrixIndex2]
                             )
-                        })
+                        }
                     }
                     listOfTemplates.clear()
                     listOfTemplates += MultiplicationTemplate(0, 1, 1, 0, 0, 0)
@@ -63,12 +63,12 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
                     listOfTemplates += MultiplicationTemplate(1, 1, 1, 0, 1, 0)
                     listOfTemplates += MultiplicationTemplate(1, 1, 1, 1, 1, 1)
                     listOfTemplates.forEach {
-                        listOfCoroutines.add(launch {
+                        launch {
                             firstMatrixPartition[it.firstArrayIndex1][it.firstArrayIndex2].multiplySubMatrix(
                                 secondMatrixPartition[it.secondArrayIndex1][it.secondArrayIndex2],
                                 temporaryMatrixPartition[it.resultMatrixIndex1][it.resultMatrixIndex2]
                             )
-                        })
+                        }
                     }
                     listOfCoroutines.forEach { it.join() }
                 }
@@ -125,7 +125,7 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
             }
         }
 
-        suspend fun multiplySubMatrix(secondMatrix: SubMatrix, resultMatrix: SubMatrix) {
+        fun multiplySubMatrix(secondMatrix: SubMatrix, resultMatrix: SubMatrix) {
             when {
                 this.numberOfRows == 1 -> {
                     this.oneRowMatrixMultiply(secondMatrix, resultMatrix)
@@ -188,15 +188,10 @@ class Matrix(val numberOfRows: Int, val numberOfColumns: Int) {
             throw IllegalArgumentException("these matrices cannot be multiplied")
         }
         val resultMatrix = Matrix(this.numberOfRows, secondMatrix.numberOfColumns)
-        val matrix = this.fullSubMatrix()
-        runBlocking {
-            launch {
-                matrix.multiplySubMatrix(
-                    secondMatrix.fullSubMatrix(),
-                    resultMatrix.fullSubMatrix()
-                )
-            }
-        }
+        this.fullSubMatrix().multiplySubMatrix(
+            secondMatrix.fullSubMatrix(),
+            resultMatrix.fullSubMatrix()
+        )
         return resultMatrix
     }
 
