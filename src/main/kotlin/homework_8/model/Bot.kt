@@ -30,7 +30,7 @@ class RationalBot(controller: GameController) : Bot(controller) {
     private var opponentSymbol: Char = ' '
     override fun makeMove() {
         val model = controller.model
-        playersSymbol = model.botSymbol
+        playersSymbol = model.opponentSymbol
         opponentSymbol = model.playerSymbol
         val move = if (controller.model.numberOfMoves == 0) {
             Pair(1, 1)

@@ -5,6 +5,7 @@ import homework_8.GameStylesheet
 import homework_8.RandomBot
 import homework_8.RationalBot
 import javafx.geometry.Pos
+import kotlinx.coroutines.runBlocking
 import tornadofx.Fragment
 import tornadofx.View
 import tornadofx.action
@@ -21,7 +22,10 @@ class StartView : View("Tic Tac Toe") {
             button("Play with yourself") {
                 addClass(GameStylesheet.menuButton)
                 action {
+                    controller.model.playerSymbol = 'X'
+                    controller.model.opponentSymbol = '0'
                     controller.model.isBotEnabled = false
+                    controller.model.isMultiplayerMode = false
                     controller.startGame()
                 }
             }
@@ -29,11 +33,17 @@ class StartView : View("Tic Tac Toe") {
                 addClass(GameStylesheet.menuButton)
                 action {
                     controller.model.isBotEnabled = true
+                    controller.model.isMultiplayerMode = false
                     find<ChooseSideFragment>().openModal()
                 }
             }
             button("Play with other player") {
                 addClass(GameStylesheet.menuButton)
+                action {
+                    controller.model.isBotEnabled = false
+                    controller.model.isMultiplayerMode = true
+                    runBlocking { controller.startMultiplayer() }
+                }
             }
         }
     }
@@ -48,7 +58,7 @@ class ChooseSideFragment : Fragment() {
         button("X") {
             addClass(GameStylesheet.menuFragmentButton)
             action {
-                controller.model.botSymbol = '0'
+                controller.model.opponentSymbol = '0'
                 controller.model.playerSymbol = 'X'
                 find<ChooseDifficultyFragment>().openModal()
                 fragment.close()
@@ -57,7 +67,7 @@ class ChooseSideFragment : Fragment() {
         button("0") {
             addClass(GameStylesheet.menuFragmentButton)
             action {
-                controller.model.botSymbol = 'X'
+                controller.model.opponentSymbol = 'X'
                 controller.model.playerSymbol = '0'
                 find<ChooseDifficultyFragment>().openModal()
                 fragment.close()

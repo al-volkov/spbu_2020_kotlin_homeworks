@@ -20,6 +20,12 @@ repositories {
 }
 
 dependencies {
+    implementation("io.ktor:ktor-server-core:1.5.4")
+    implementation("io.ktor:ktor-server-netty:1.5.4")
+    implementation("io.ktor:ktor-websockets:1.5.4")
+    implementation("io.ktor:ktor-client-websockets:1.5.4")
+    implementation("io.ktor:ktor-client-cio:1.5.4")
+    implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation ("org.jetbrains.kotlin:kotlin-reflect:1.4.32")
     testImplementation(platform("org.junit:junit-bom:5.7.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")

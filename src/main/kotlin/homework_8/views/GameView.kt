@@ -32,6 +32,9 @@ class GameView : View("Tic Tac Toe") {
                                 addClass(GameStylesheet.gameButton)
                                 id = "$row$column"
                                 action {
+                                    if (controller.model.isMultiplayerMode) {
+                                        controller.model.isMoveToSend = true
+                                    }
                                     controller.makeMove(row, column)
                                 }
                             }

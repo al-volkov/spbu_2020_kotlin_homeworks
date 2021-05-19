@@ -4,6 +4,7 @@ import homework_8.Bot
 import homework_8.model.FieldsChecker.getWinner
 import homework_8.GameController
 import homework_8.RandomBot
+import javafx.application.Platform
 
 class GameModel(private val controller: GameController) {
     companion object {
@@ -11,20 +12,24 @@ class GameModel(private val controller: GameController) {
         const val MAX_NUMBER_OF_MOVES = 9
         const val SIZE = 3
     }
-    private var isFinished = false
+
+    var isFinished = false
     val board = Array(GameController.SIZE) { CharArray(GameController.SIZE) { ' ' } }
     var playerSymbol = 'X'
-    var botSymbol = '0'
+    var opponentSymbol = '0'
     var numberOfMoves = 0
     var isBotEnabled = false
+    var isMultiplayerMode = false
+    var isMoveToSend = false
+    var isWaitingForMove = false
     var bot: Bot = RandomBot(controller)
 
     fun activateBot() {
         if (isBotEnabled && !isFinished) {
-            if (numberOfMoves % 2 == 0 && botSymbol == 'X') {
+            if (numberOfMoves % 2 == 0 && opponentSymbol == 'X') {
                 bot.makeMove()
             }
-            if (numberOfMoves % 2 == 1 && botSymbol == '0') {
+            if (numberOfMoves % 2 == 1 && opponentSymbol == '0') {
                 bot.makeMove()
             }
         }
@@ -40,7 +45,9 @@ class GameModel(private val controller: GameController) {
         if (numberOfMoves >= MIN_NUMBER_OF_MOVES_TO_WIN) {
             val winner = board.getWinner()
             if (winner != 0 || numberOfMoves == MAX_NUMBER_OF_MOVES) {
-                controller.finishGame(winner)
+                Platform.runLater {
+                    controller.finishGame(winner)
+                }
                 isFinished = true
             }
         }
