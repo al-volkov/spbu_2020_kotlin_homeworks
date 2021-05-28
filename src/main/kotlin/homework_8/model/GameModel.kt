@@ -7,6 +7,7 @@ import homework_8.GameController
 import homework_8.RandomBot
 import homework_8.RationalBot
 import io.ktor.client.features.websocket.DefaultClientWebSocketSession
+import io.ktor.http.cio.websocket.close
 import io.ktor.http.cio.websocket.Frame
 import javafx.application.Platform
 import kotlinx.coroutines.GlobalScope
