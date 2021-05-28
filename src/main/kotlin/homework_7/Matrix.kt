@@ -47,66 +47,41 @@ class Matrix(private val numberOfRows: Int, private val numberOfColumns: Int) {
 
         private fun oneRowMatrixMultiply(secondMatrix: SubMatrix, resultMatrix: SubMatrix) {
             val secondMatrixRowRange = columnRange.map { it - startColumn + secondMatrix.startRow }
-            val resultMatrixColumnRange = secondMatrix.columnRange.map {
-                it + -secondMatrix.startColumn + resultMatrix.startColumn
-            }
-            for ((thisMatrixColumn, secondMatrixRow) in columnRange.zip(secondMatrixRowRange)) {
-                for ((secondMatrixColumn, resultMatrixColumn) in secondMatrix.columnRange.zip(
-                    resultMatrixColumnRange
-                )) {
-                    resultMatrix.mainMatrix[
-                            resultMatrix.startRow, resultMatrixColumn
-                    ] +=
-                        mainMatrix[startRow, thisMatrixColumn] * secondMatrix.mainMatrix[
-                                secondMatrixRow, secondMatrixColumn
-                        ]
-                }
-            }
+            val resultMatrixColumnRange =
+                secondMatrix.columnRange.map { it + -secondMatrix.startColumn + resultMatrix.startColumn }
+            for ((thisMatrixColumn, secondMatrixRow) in columnRange.zip(secondMatrixRowRange))
+                for ((secondMatrixColumn, resultMatrixColumn) in secondMatrix.columnRange.zip(resultMatrixColumnRange))
+                    resultMatrix.mainMatrix[resultMatrix.startRow, resultMatrixColumn] +=
+                        mainMatrix[startRow, thisMatrixColumn] *
+                                secondMatrix.mainMatrix[secondMatrixRow, secondMatrixColumn]
         }
 
         private fun oneColumnMatrixMultiply(secondMatrix: SubMatrix, resultMatrix: SubMatrix) {
             val resultMatrixRowRange = rowRange.map { it - startRow + resultMatrix.startRow }
             val resultMatrixColumnRange =
                 secondMatrix.columnRange.map { it - secondMatrix.startColumn + resultMatrix.startColumn }
-            for ((thisMatrixRow, resultMatrixRow) in rowRange.zip(resultMatrixRowRange)) {
-                for ((secondMatrixColumn, resultMatrixColumn) in secondMatrix.columnRange.zip(
-                    resultMatrixColumnRange
-                )) {
+            for ((thisMatrixRow, resultMatrixRow) in rowRange.zip(resultMatrixRowRange))
+                for ((secondMatrixColumn, resultMatrixColumn) in secondMatrix.columnRange.zip(resultMatrixColumnRange))
                     resultMatrix.mainMatrix[resultMatrixRow, resultMatrixColumn] +=
                         this.mainMatrix[thisMatrixRow, startColumn] *
                                 secondMatrix.mainMatrix[secondMatrix.startRow, secondMatrixColumn]
-                }
-            }
         }
 
         private fun secondMatrixOneColumnMultiply(secondMatrix: SubMatrix, resultMatrix: SubMatrix) {
             val resultMatrixRowRange = rowRange.map { it - startRow + resultMatrix.startRow }
             val secondMatrixRowRange = columnRange.map { it - startColumn + secondMatrix.startRow }
-            for ((thisMatrixRow, resultMatrixRow) in rowRange.zip(resultMatrixRowRange)) {
-                for ((thisMatrixColumn, secondMatrixRow) in columnRange.zip(secondMatrixRowRange)) {
-                    resultMatrix.mainMatrix[
-                            resultMatrixRow, resultMatrix.startColumn
-                    ] += mainMatrix[thisMatrixRow, thisMatrixColumn] *
-                            secondMatrix.mainMatrix[
-                                    secondMatrixRow, secondMatrix.startColumn
-                            ]
-                }
-            }
+            for ((thisMatrixRow, resultMatrixRow) in rowRange.zip(resultMatrixRowRange))
+                for ((thisMatrixColumn, secondMatrixRow) in columnRange.zip(secondMatrixRowRange))
+                    resultMatrix.mainMatrix[resultMatrixRow, resultMatrix.startColumn] +=
+                        mainMatrix[thisMatrixRow, thisMatrixColumn] *
+                                secondMatrix.mainMatrix[secondMatrixRow, secondMatrix.startColumn]
         }
 
         fun multiplySubMatrix(secondMatrix: SubMatrix, resultMatrix: SubMatrix) {
             when {
-                this.numberOfRows == 1 -> {
-                    this.oneRowMatrixMultiply(secondMatrix, resultMatrix)
-                    return
-                }
-                this.numberOfColumns == 1 -> {
-                    this.oneColumnMatrixMultiply(secondMatrix, resultMatrix)
-                    return
-                }
-                secondMatrix.numberOfColumns == 1 -> {
-                    this.secondMatrixOneColumnMultiply(secondMatrix, resultMatrix)
-                }
+                this.numberOfRows == 1 -> this.oneRowMatrixMultiply(secondMatrix, resultMatrix)
+                this.numberOfColumns == 1 -> this.oneColumnMatrixMultiply(secondMatrix, resultMatrix)
+                secondMatrix.numberOfColumns == 1 -> this.secondMatrixOneColumnMultiply(secondMatrix, resultMatrix)
                 else -> {
                     val temporaryMatrix =
                         Matrix(resultMatrix.numberOfRows, resultMatrix.numberOfColumns).fullSubMatrix()
