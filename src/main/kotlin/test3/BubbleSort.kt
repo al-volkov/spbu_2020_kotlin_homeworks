@@ -3,6 +3,10 @@ package test3
 import java.lang.ArithmeticException
 import java.lang.IndexOutOfBoundsException
 
+/**
+ * sorts iterable collection and returns typed array
+ * [comparator] - comparator for elements
+ */
 inline fun <reified T> Iterable<T>.bubbleSort(comparator: Comparator<T>): Array<T> {
     val list = mutableListOf<T>()
     this.forEach { list.add(it) }
