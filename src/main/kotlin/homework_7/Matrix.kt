@@ -103,23 +103,14 @@ class Matrix(private val numberOfRows: Int, private val numberOfColumns: Int) {
         private fun partition(): Array<Array<SubMatrix>> {
             val midRow = (startRow + finalRow - 1) / 2
             val midColumn = (startColumn + finalColumn - 1) / 2
-            val submatrix11 = SubMatrix(mainMatrix, startRow, midRow, startColumn, midColumn)
-            val submatrix12 = SubMatrix(mainMatrix, startRow, midRow, midColumn + 1, finalColumn)
-            val submatrix21 = SubMatrix(mainMatrix, midRow + 1, finalRow, startColumn, midColumn)
-            val submatrix22 = SubMatrix(mainMatrix, midRow + 1, finalRow, midColumn + 1, finalColumn)
-            return arrayOf(arrayOf(submatrix11, submatrix12), arrayOf(submatrix21, submatrix22))
+            val subMatrix11 = SubMatrix(mainMatrix, startRow, midRow, startColumn, midColumn)
+            val subMatrix12 = SubMatrix(mainMatrix, startRow, midRow, midColumn + 1, finalColumn)
+            val subMatrix21 = SubMatrix(mainMatrix, midRow + 1, finalRow, startColumn, midColumn)
+            val subMatrix22 = SubMatrix(mainMatrix, midRow + 1, finalRow, midColumn + 1, finalColumn)
+            return arrayOf(arrayOf(subMatrix11, subMatrix12), arrayOf(subMatrix21, subMatrix22))
         }
 
         companion object {
-            private data class MultiplicationTemplate(
-                val firstArrayIndex1: Int,
-                val firstArrayIndex2: Int,
-                val secondArrayIndex1: Int,
-                val secondArrayIndex2: Int,
-                val resultMatrixIndex1: Int,
-                val resultMatrixIndex2: Int
-            )
-
             fun recursiveLaunch(
                 firstMatrixPartition: Array<Array<SubMatrix>>,
                 secondMatrixPartition: Array<Array<SubMatrix>>,
@@ -127,30 +118,20 @@ class Matrix(private val numberOfRows: Int, private val numberOfColumns: Int) {
                 temporaryMatrixPartition: Array<Array<SubMatrix>>
             ) {
                 runBlocking {
-                    val listOfTemplates = mutableListOf<MultiplicationTemplate>()
-                    listOfTemplates += MultiplicationTemplate(0, 0, 0, 0, 0, 0)
-                    listOfTemplates += MultiplicationTemplate(0, 0, 0, 1, 0, 1)
-                    listOfTemplates += MultiplicationTemplate(1, 0, 0, 0, 1, 0)
-                    listOfTemplates += MultiplicationTemplate(1, 0, 0, 1, 1, 1)
-                    listOfTemplates.forEach {
-                        launch {
-                            firstMatrixPartition[it.firstArrayIndex1][it.firstArrayIndex2].multiplySubMatrix(
-                                secondMatrixPartition[it.secondArrayIndex1][it.secondArrayIndex2],
-                                resultMatrixPartition[it.resultMatrixIndex1][it.resultMatrixIndex2]
-                            )
-                        }
-                    }
-                    listOfTemplates.clear()
-                    listOfTemplates += MultiplicationTemplate(0, 1, 1, 0, 0, 0)
-                    listOfTemplates += MultiplicationTemplate(0, 1, 1, 1, 0, 1)
-                    listOfTemplates += MultiplicationTemplate(1, 1, 1, 0, 1, 0)
-                    listOfTemplates += MultiplicationTemplate(1, 1, 1, 1, 1, 1)
-                    listOfTemplates.forEach {
-                        launch {
-                            firstMatrixPartition[it.firstArrayIndex1][it.firstArrayIndex2].multiplySubMatrix(
-                                secondMatrixPartition[it.secondArrayIndex1][it.secondArrayIndex2],
-                                temporaryMatrixPartition[it.resultMatrixIndex1][it.resultMatrixIndex2]
-                            )
+                    for (row in 0..1) {
+                        for (column in 0..1) {
+                            launch {
+                                firstMatrixPartition[row][0].multiplySubMatrix(
+                                    secondMatrixPartition[0][column],
+                                    resultMatrixPartition[row][column]
+                                )
+                            }
+                            launch {
+                                firstMatrixPartition[row][1].multiplySubMatrix(
+                                    secondMatrixPartition[1][column],
+                                    temporaryMatrixPartition[row][column]
+                                )
+                            }
                         }
                     }
                 }
