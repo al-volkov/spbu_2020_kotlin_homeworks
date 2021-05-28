@@ -1,5 +1,8 @@
 package homework_8
 
+import homework_8.model.Move.Companion.getMove
+import homework_8.model.MultiplayerModel
+import homework_8.model.Player
 import io.ktor.client.HttpClient
 import io.ktor.client.features.websocket.webSocket
 import io.ktor.client.features.websocket.WebSockets
@@ -12,11 +15,10 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class GameClient(private val controller: GameController) {
+class GameClient(private val model: MultiplayerModel) {
     companion object {
         const val SYMBOL_START = "symbol:"
         const val MOVE_START = "move:"
-        const val ZERO_CODE = '0'.toInt()
     }
 
     fun start() {
@@ -25,7 +27,7 @@ class GameClient(private val controller: GameController) {
         }
         runBlocking {
             client.webSocket(method = HttpMethod.Get, host = "127.0.0.1", port = 8080, path = "/") {
-                controller.socket = this
+                model.socket = this
                 val incomingMessageRoutine = launch { incomingInformation() }
                 val checkerRoutine = launch { resultChecker() }
                 checkerRoutine.join()
@@ -40,7 +42,6 @@ class GameClient(private val controller: GameController) {
             for (message in incoming) {
                 message as? Frame.Text ?: continue
                 val receivedText = message.readText()
-                println(receivedText)
                 handleInformation(receivedText)
             }
         } finally {
@@ -50,7 +51,7 @@ class GameClient(private val controller: GameController) {
 
     private fun resultChecker() {
         while (true) {
-            if (controller.model.isFinished) {
+            if (model.isFinished) {
                 return
             }
         }
@@ -64,19 +65,21 @@ class GameClient(private val controller: GameController) {
     }
 
     private fun handleSymbol(text: String) {
-        val playersSymbol = text.replace(SYMBOL_START, "").first()
-        controller.model.playerSymbol = playersSymbol
-        if (playersSymbol == '0') {
-            controller.model.isWaitingForMove = true
-        } else {
-            controller.enableRequiredButtons()
+        when (text.replace(SYMBOL_START, "").first()) {
+            Player.FIRST.symbol -> {
+                model.playerSymbol = Player.FIRST.symbol
+                model.opponentSymbol = Player.SECOND.symbol
+                model.enableRequiredButtons()
+            }
+            Player.SECOND.symbol -> {
+                model.playerSymbol = Player.SECOND.symbol
+                model.opponentSymbol = Player.FIRST.symbol
+                model.isWaitingForMove = true
+            }
         }
     }
 
     private fun handleMove(text: String) {
-        val moveText = text.replace(MOVE_START, "")
-        controller.makeMove(moveText[0].toInt() - ZERO_CODE, moveText[1].toInt() - ZERO_CODE)
-        controller.enableRequiredButtons()
-        controller.model.isWaitingForMove = false
+        model.handleMultiplayerMove(text.getMove())
     }
 }

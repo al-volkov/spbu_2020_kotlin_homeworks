@@ -3,22 +3,20 @@ package homework_8
 import homework_8.model.FieldsChecker.getPossibleMoves
 import homework_8.model.FieldsChecker.getWinner
 import homework_8.model.FieldsChecker.isFinal
+import homework_8.model.Move
+import homework_8.model.OnePlayerModel
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class Bot(protected val controller: GameController) {
-    abstract fun makeMove()
+abstract class Bot(val model: OnePlayerModel) {
+    abstract fun getMove(): Move
 }
 
-class RandomBot(controller: GameController) : Bot(controller) {
-    override fun makeMove() {
-        val possibleMoves = controller.model.board.getPossibleMoves()
-        val move = possibleMoves.random()
-        controller.makeMove(move.first, move.second)
-    }
+class RandomBot(model: OnePlayerModel) : Bot(model) {
+    override fun getMove() = model.board.getPossibleMoves().random()
 }
 
-class RationalBot(controller: GameController) : Bot(controller) {
+class RationalBot(model: OnePlayerModel) : Bot(model) {
     companion object {
         const val MIN_SCORE = -1000
         const val MAX_SCORE = 1000
@@ -28,25 +26,18 @@ class RationalBot(controller: GameController) : Bot(controller) {
 
     private var playersSymbol: Char = ' '
     private var opponentSymbol: Char = ' '
-    override fun makeMove() {
-        val model = controller.model
-        playersSymbol = model.opponentSymbol
-        opponentSymbol = model.playerSymbol
-        val move = if (controller.model.numberOfMoves == 0) {
-            Pair(1, 1)
+    override fun getMove(): Move {
+        playersSymbol = model.botSymbol
+        opponentSymbol = model.playersSymbol
+        return if (model.numberOfMoves == 0) {
+            Move(1, 1)
         } else {
             model.board.findBestMove()
         }
-        controller.makeMove(move.first, move.second)
     }
 
     private fun Array<CharArray>.evaluateScore(): Int {
-        val winnerSymbol = when (this.getWinner()) {
-            1 -> 'X'
-            2 -> '0'
-            else -> ' '
-        }
-        return when (winnerSymbol) {
+        return when (this.getWinner()?.symbol ?: ' ') {
             playersSymbol -> PLAYER_VALUE
             opponentSymbol -> OPPONENT_VALUE
             else -> 0
@@ -62,28 +53,28 @@ class RationalBot(controller: GameController) : Bot(controller) {
         if (isMaximizing) {
             best = MIN_SCORE
             for (move in this.getPossibleMoves()) {
-                this[move.first][move.second] = playersSymbol
+                this[move.row][move.column] = playersSymbol
                 best = max(best, this.minimax(!isMaximizing))
-                this[move.first][move.second] = ' '
+                this[move.row][move.column] = ' '
             }
         } else {
             best = MAX_SCORE
             for (move in this.getPossibleMoves()) {
-                this[move.first][move.second] = opponentSymbol
+                this[move.row][move.column] = opponentSymbol
                 best = min(best, this.minimax(!isMaximizing))
-                this[move.first][move.second] = ' '
+                this[move.row][move.column] = ' '
             }
         }
         return best
     }
 
-    private fun Array<CharArray>.findBestMove(): Pair<Int, Int> {
+    private fun Array<CharArray>.findBestMove(): Move {
         var bestScore = MIN_SCORE
-        var bestMove = Pair(-1, -1)
+        var bestMove = Move(-1, -1)
         for (move in this.getPossibleMoves()) {
-            this[move.first][move.second] = playersSymbol
+            this[move.row][move.column] = playersSymbol
             val newScore = this.minimax(false)
-            this[move.first][move.second] = ' '
+            this[move.row][move.column] = ' '
             if (newScore > bestScore) {
                 bestScore = newScore
                 bestMove = move

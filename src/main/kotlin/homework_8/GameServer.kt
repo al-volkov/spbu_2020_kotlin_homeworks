@@ -1,5 +1,8 @@
 package homework_8
 
+import homework_8.GameClient.Companion.MOVE_START
+import homework_8.GameClient.Companion.SYMBOL_START
+import homework_8.model.Player
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.http.cio.websocket.Frame
@@ -15,18 +18,17 @@ import java.util.concurrent.atomic.AtomicInteger
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-@Suppress("unused")
 fun Application.module() {
     install(WebSockets)
     routing {
-        val connections = Collections.synchronizedSet<Player?>(LinkedHashSet())
+        val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
         webSocket("/") {
-            val thisConnection = Player(this)
+            val thisConnection = Connection(this)
             connections += thisConnection
             try {
                 if (connections.size == 2) {
-                    connections.elementAt(0).session.send("symbol:X")
-                    connections.elementAt(1).session.send("symbol:0")
+                    connections.elementAt(0).session.send("$SYMBOL_START${Player.FIRST.symbol}")
+                    connections.elementAt(1).session.send("$SYMBOL_START${Player.SECOND.symbol}")
                 }
                 if (connections.size > 2) {
                     throw IllegalArgumentException("too many players")
@@ -34,7 +36,7 @@ fun Application.module() {
                 for (frame in incoming) {
                     frame as? Frame.Text ?: continue
                     val receivedText = frame.readText()
-                    connections.elementAt((thisConnection.id + 1) % 2).session.send("move:$receivedText")
+                    connections.elementAt((thisConnection.id + 1) % 2).session.send("$MOVE_START$receivedText")
                 }
             } finally {
                 println("Removing $thisConnection!")
@@ -44,7 +46,7 @@ fun Application.module() {
     }
 }
 
-class Player(val session: DefaultWebSocketSession) {
+class Connection(val session: DefaultWebSocketSession) {
     companion object {
         var lastId = AtomicInteger(0)
     }

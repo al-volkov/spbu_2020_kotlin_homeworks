@@ -1,71 +1,56 @@
 package homework_8
 
 import homework_8.model.GameModel
+import homework_8.model.Move
+import homework_8.model.MultiplayerModel
+import homework_8.model.OnePlayerModel
+import homework_8.model.Player
+import homework_8.model.TwoPlayersModel
 import homework_8.views.FinalView
 import homework_8.views.GameView
 import homework_8.views.ResultFragment
 import homework_8.views.StartView
-import io.ktor.client.features.websocket.DefaultClientWebSocketSession
-import io.ktor.http.cio.websocket.Frame
-import io.ktor.http.cio.websocket.close
+import javafx.application.Platform
 import tornadofx.Controller
 import tornadofx.text
-import javafx.application.Platform
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class GameController : Controller() {
     companion object {
         const val SIZE = 3
     }
 
-    val client = GameClient(this)
-    val model = GameModel(this)
-    lateinit var socket: DefaultClientWebSocketSession
+    var model: GameModel = TwoPlayersModel(this)
+
+    var isBotEnabled = false
+    var isBotDifficult = false
+    var player: Player = Player.FIRST
+    var isMultiplayerMode = false
     fun startGame() {
+        updateButtons()
+        updateModel()
         find<StartView>().replaceWith<GameView>()
-        model.activateBot()
     }
 
-    fun makeMove(row: Int, column: Int) {
-        if (model.isMoveToSend) {
-            runBlocking {
-                multiplayerMove(row, column)
-            }
-        }
-        model.makeMove(row, column)
-        if (model.isMultiplayerMode) {
-            Platform.runLater {
-                changeButton(row, column)
-            }
+    fun makeMove(move: Move) {
+        model.makeMove(move)
+    }
+
+    private fun updateModel() {
+        model = if (isBotEnabled) {
+            OnePlayerModel(player, isBotDifficult, this)
         } else {
-            changeButton(row, column)
+            if (isMultiplayerMode) {
+                MultiplayerModel(this)
+            } else {
+                TwoPlayersModel(this)
+            }
         }
-        model.activateBot()
     }
 
-    private fun changeButton(row: Int, column: Int) {
+    fun changeButton(row: Int, column: Int, symbol: Char) {
         val button = find<GameView>().root.lookup("#$row$column")
         button.isDisable = true
-        if (model.numberOfMoves % 2 == 1) {
-            button.text("X")
-        } else {
-            button.text("0")
-        }
-    }
-
-    private suspend fun multiplayerMove(row: Int, column: Int) {
-        socket.send(Frame.Text("$row$column"))
-        model.isMoveToSend = false
-        disableAllButtons()
-        model.isWaitingForMove = true
-    }
-
-    fun restartGame() {
-        model.update()
-        updateButtons()
-        find<FinalView>().replaceWith<StartView>()
+        button.text(symbol.toString())
     }
 
     private fun updateButtons() {
@@ -79,46 +64,31 @@ class GameController : Controller() {
         }
     }
 
-    fun finishGame(winner: Int) {
-        runBlocking {
-            socket.close()
+    fun finishGame(winner: Player?) {
+        Platform.runLater {
+            find<GameView>().replaceWith<FinalView>()
         }
-        find<GameView>().replaceWith<FinalView>()
-        val resultFragment = ResultFragment(
-            when (winner) {
-                1 -> "First player won"
-                2 -> "Second player won"
-                else -> "Draw"
-            }
-        )
-        resultFragment.openModal()
+        val resultFragment = ResultFragment(winner?.winMessage ?: "Draw")
+        Platform.runLater {
+            resultFragment.openModal()
+        }
     }
 
-    fun startMultiplayer() {
-        find<StartView>().replaceWith<GameView>()
-        disableAllButtons()
-        GlobalScope.launch { client.start() }
-    }
-
-    private fun disableAllButtons() {
+    fun disableAllButtons() {
         val gameView = find<GameView>()
-        for (row in 0 until GameModel.SIZE) {
-            for (column in 0 until GameModel.SIZE) {
+        for (row in 0 until SIZE) {
+            for (column in 0 until SIZE) {
                 val button = gameView.root.lookup("#$row$column")
                 button.isDisable = true
             }
         }
     }
 
-    fun enableRequiredButtons() {
-        val gameView = find<GameView>()
-        for (row in 0 until GameModel.SIZE) {
-            for (column in 0 until GameModel.SIZE) {
-                if (model.board[row][column] == ' ') {
-                    val button = gameView.root.lookup("#$row$column")
-                    button.isDisable = false
-                }
-            }
-        }
+    fun enableButton(row: Int, column: Int) {
+        find<GameView>().root.lookup("#$row$column").isDisable = false
+    }
+
+    fun restartGame() {
+        find<FinalView>().replaceWith<StartView>()
     }
 }

@@ -2,10 +2,8 @@ package homework_8.views
 
 import homework_8.GameController
 import homework_8.GameStylesheet
-import homework_8.RandomBot
-import homework_8.RationalBot
+import homework_8.model.Player
 import javafx.geometry.Pos
-import kotlinx.coroutines.runBlocking
 import tornadofx.Fragment
 import tornadofx.View
 import tornadofx.action
@@ -22,27 +20,25 @@ class StartView : View("Tic Tac Toe") {
             button("Play with yourself") {
                 addClass(GameStylesheet.menuButton)
                 action {
-                    controller.model.playerSymbol = 'X'
-                    controller.model.opponentSymbol = '0'
-                    controller.model.isBotEnabled = false
-                    controller.model.isMultiplayerMode = false
+                    controller.isBotEnabled = false
+                    controller.isMultiplayerMode = false
                     controller.startGame()
                 }
             }
             button("Play with bot") {
                 addClass(GameStylesheet.menuButton)
                 action {
-                    controller.model.isBotEnabled = true
-                    controller.model.isMultiplayerMode = false
+                    controller.isBotEnabled = true
+                    controller.isMultiplayerMode = false
                     find<ChooseSideFragment>().openModal()
                 }
             }
             button("Play with other player") {
                 addClass(GameStylesheet.menuButton)
                 action {
-                    controller.model.isBotEnabled = false
-                    controller.model.isMultiplayerMode = true
-                    runBlocking { controller.startMultiplayer() }
+                    controller.isBotEnabled = false
+                    controller.isMultiplayerMode = true
+                    controller.startGame()
                 }
             }
         }
@@ -55,20 +51,18 @@ class ChooseSideFragment : Fragment() {
     override val root = vbox {
         addClass(GameStylesheet.menuFragment)
         this.alignment = Pos.CENTER
-        button("X") {
+        button(Player.FIRST.symbol.toString()) {
             addClass(GameStylesheet.menuFragmentButton)
             action {
-                controller.model.opponentSymbol = '0'
-                controller.model.playerSymbol = 'X'
+                controller.player = Player.FIRST
                 find<ChooseDifficultyFragment>().openModal()
                 fragment.close()
             }
         }
-        button("0") {
+        button(Player.SECOND.symbol.toString()) {
             addClass(GameStylesheet.menuFragmentButton)
             action {
-                controller.model.opponentSymbol = 'X'
-                controller.model.playerSymbol = '0'
+                controller.player = Player.SECOND
                 find<ChooseDifficultyFragment>().openModal()
                 fragment.close()
             }
@@ -85,7 +79,7 @@ class ChooseDifficultyFragment : Fragment() {
         button("Easy bot") {
             addClass(GameStylesheet.menuFragmentButton)
             action {
-                controller.model.bot = RandomBot(controller)
+                controller.isBotDifficult = false
                 controller.startGame()
                 fragment.close()
             }
@@ -93,7 +87,7 @@ class ChooseDifficultyFragment : Fragment() {
         button("Difficult bot") {
             addClass(GameStylesheet.menuFragmentButton)
             action {
-                controller.model.bot = RationalBot(controller)
+                controller.isBotDifficult = true
                 controller.startGame()
                 fragment.close()
             }

@@ -2,6 +2,7 @@ package homework_8.views
 
 import homework_8.GameController
 import homework_8.GameStylesheet
+import homework_8.model.Move
 import javafx.geometry.Pos
 import tornadofx.View
 import tornadofx.action
@@ -32,10 +33,7 @@ class GameView : View("Tic Tac Toe") {
                                 addClass(GameStylesheet.gameButton)
                                 id = "$row$column"
                                 action {
-                                    if (controller.model.isMultiplayerMode) {
-                                        controller.model.isMoveToSend = true
-                                    }
-                                    controller.makeMove(row, column)
+                                    controller.makeMove(Move(row, column))
                                 }
                             }
                         }
