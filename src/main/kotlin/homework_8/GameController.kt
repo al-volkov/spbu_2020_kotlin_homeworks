@@ -36,14 +36,10 @@ class GameController : Controller() {
     }
 
     private fun updateModel() {
-        model = if (isBotEnabled) {
-            OnePlayerModel(player, isBotDifficult, this)
-        } else {
-            if (isMultiplayerMode) {
-                MultiplayerModel(this)
-            } else {
-                TwoPlayersModel(this)
-            }
+        model = when {
+            isBotEnabled -> OnePlayerModel(player, isBotDifficult, this)
+            isMultiplayerMode -> MultiplayerModel(this)
+            else -> TwoPlayersModel(this)
         }
     }
 
