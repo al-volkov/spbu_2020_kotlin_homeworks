@@ -1,8 +1,8 @@
 package homework_8
 
-import homework_8.model.FieldsChecker.getPossibleMoves
-import homework_8.model.FieldsChecker.getWinner
-import homework_8.model.FieldsChecker.isFinal
+import homework_8.model.getPossibleMoves
+import homework_8.model.getWinner
+import homework_8.model.isFinal
 import homework_8.model.Move
 import homework_8.model.OnePlayerModel
 import kotlin.math.max
