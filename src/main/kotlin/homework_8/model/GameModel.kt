@@ -54,7 +54,7 @@ class TwoPlayersModel(controller: GameController) : GameModel(controller) {
 
 class OnePlayerModel(player: Player, isBotDifficult: Boolean, controller: GameController) :
     GameModel(controller) {
-    private val bot: Bot = if (isBotDifficult) RationalBot(this) else RandomBot(this)
+    private val bot: Bot = if (isBotDifficult) RationalBot(player.getOpponent()) else RandomBot()
     val botSymbol = player.getOpponent().symbol
     val playersSymbol = player.symbol
 
@@ -85,7 +85,7 @@ class OnePlayerModel(player: Player, isBotDifficult: Boolean, controller: GameCo
     }
 
     private fun handleBot() {
-        val botMove = bot.getMove()
+        val botMove = bot.getMove(board.copyOf())
         board[botMove.row][botMove.column] = botSymbol
         ++numberOfMoves
         if (numberOfMoves == 1) {

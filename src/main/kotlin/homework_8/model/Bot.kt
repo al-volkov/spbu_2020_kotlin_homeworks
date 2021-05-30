@@ -4,19 +4,19 @@ import homework_8.model.getPossibleMoves
 import homework_8.model.getWinner
 import homework_8.model.isFinal
 import homework_8.model.Move
-import homework_8.model.OnePlayerModel
+import homework_8.model.Player
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class Bot(val model: OnePlayerModel) {
-    abstract fun getMove(): Move
+interface Bot {
+    fun getMove(board: Array<CharArray>): Move
 }
 
-class RandomBot(model: OnePlayerModel) : Bot(model) {
-    override fun getMove() = model.board.getPossibleMoves().random()
+class RandomBot : Bot {
+    override fun getMove(board: Array<CharArray>) = board.getPossibleMoves().random()
 }
 
-class RationalBot(model: OnePlayerModel) : Bot(model) {
+class RationalBot(private val bot: Player) : Bot {
     companion object {
         const val MIN_SCORE = -1000
         const val MAX_SCORE = 1000
@@ -26,14 +26,10 @@ class RationalBot(model: OnePlayerModel) : Bot(model) {
 
     private var playersSymbol: Char = ' '
     private var opponentSymbol: Char = ' '
-    override fun getMove(): Move {
-        playersSymbol = model.botSymbol
-        opponentSymbol = model.playersSymbol
-        return if (model.numberOfMoves == 0) {
-            Move(1, 1)
-        } else {
-            model.board.findBestMove()
-        }
+    override fun getMove(board: Array<CharArray>): Move {
+        playersSymbol = bot.symbol
+        opponentSymbol = bot.getOpponent().symbol
+        return board.findBestMove()
     }
 
     private fun Array<CharArray>.evaluateScore(): Int {
