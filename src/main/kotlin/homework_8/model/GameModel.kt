@@ -2,7 +2,6 @@ package homework_8.model
 
 import homework_8.Bot
 import homework_8.GameClient
-import homework_8.model.getWinner
 import homework_8.GameController
 import homework_8.RandomBot
 import homework_8.RationalBot
