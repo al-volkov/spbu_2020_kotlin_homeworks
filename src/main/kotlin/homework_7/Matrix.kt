@@ -110,6 +110,10 @@ class Matrix(private val numberOfRows: Int, private val numberOfColumns: Int) {
         }
 
         companion object {
+            const val FIRST_ROW = 0
+            const val SECOND_ROW = 1
+            const val FIRST_COLUMN = 0
+            const val SECOND_COLUMN = 1
             fun launchBlockMatrixMultiplication(
                 firstMatrixPartition: Array<Array<SubMatrix>>,
                 secondMatrixPartition: Array<Array<SubMatrix>>,
@@ -120,14 +124,14 @@ class Matrix(private val numberOfRows: Int, private val numberOfColumns: Int) {
                     for (row in 0..1) {
                         for (column in 0..1) {
                             launch {
-                                firstMatrixPartition[row][0].multiplySubMatrix(
-                                    secondMatrixPartition[0][column],
+                                firstMatrixPartition[row][FIRST_COLUMN].multiplySubMatrix(
+                                    secondMatrixPartition[FIRST_ROW][column],
                                     resultMatrixPartition[row][column]
                                 )
                             }
                             launch {
-                                firstMatrixPartition[row][1].multiplySubMatrix(
-                                    secondMatrixPartition[1][column],
+                                firstMatrixPartition[row][SECOND_COLUMN].multiplySubMatrix(
+                                    secondMatrixPartition[SECOND_ROW][column],
                                     temporaryMatrixPartition[row][column]
                                 )
                             }
