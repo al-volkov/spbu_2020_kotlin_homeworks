@@ -16,17 +16,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class GameClient(private val model: MultiplayerModel) {
-    companion object {
-        const val SYMBOL_START = "symbol:"
-        const val MOVE_START = "move:"
-    }
-
     fun start() {
         val client = HttpClient {
             install(WebSockets)
         }
         runBlocking {
-            client.webSocket(method = HttpMethod.Get, host = "127.0.0.1", port = 8080, path = "/") {
+            client.webSocket(method = HttpMethod.Get, host = HOST, port = PORT, path = PATH) {
                 model.socket = this
                 val incomingMessageRoutine = launch { incomingInformation() }
                 val checkerRoutine = launch { resultChecker() }
@@ -81,5 +76,13 @@ class GameClient(private val model: MultiplayerModel) {
 
     private fun handleMove(text: String) {
         model.handleMultiplayerMove(text.getMove())
+    }
+
+    companion object {
+        const val SYMBOL_START = "symbol:"
+        const val MOVE_START = "move:"
+        const val HOST = "127.0.0.1"
+        const val PORT = 8080
+        const val PATH = "/"
     }
 }
