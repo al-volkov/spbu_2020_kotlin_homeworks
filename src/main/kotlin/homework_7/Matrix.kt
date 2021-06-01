@@ -4,13 +4,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class Matrix(private val numberOfRows: Int, private val numberOfColumns: Int) {
-    init {
-        require(numberOfColumns >= 1 && numberOfRows >= 1) { "size of matrix must be positive integer" }
-    }
 
     private val array = Array(numberOfRows) { IntArray(numberOfColumns) { 0 } }
     private val rowRange = 0 until numberOfRows
     private val columnRange = 0 until numberOfColumns
+
+    init {
+        require(numberOfColumns >= 1 && numberOfRows >= 1) { "size of matrix must be positive integer" }
+    }
 
     constructor(array: Array<IntArray>) : this(array.size, array.first().size) {
         for (row in 0 until this.numberOfRows) {
