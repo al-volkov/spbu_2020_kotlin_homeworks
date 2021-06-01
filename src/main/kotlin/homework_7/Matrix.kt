@@ -122,18 +122,20 @@ class Matrix(private val numberOfRows: Int, private val numberOfColumns: Int) {
             ) {
                 // Block matrix multiplication is similar to multiplication of square matrices of size 2
                 runBlocking {
-                    for (row in firstMatrixPartition.indices) {
-                        for (column in secondMatrixPartition.indices) {
+                    for ((firstRow, resultRow) in firstMatrixPartition.indices.zip(resultMatrixPartition.indices)) {
+                        for ((secondColumn, resultColumn) in secondMatrixPartition.first().indices.zip(
+                            resultMatrixPartition.first().indices
+                        )) {
                             launch {
-                                firstMatrixPartition[row][FIRST_COLUMN].multiplySubMatrix(
-                                    secondMatrixPartition[FIRST_ROW][column],
-                                    resultMatrixPartition[row][column]
+                                firstMatrixPartition[firstRow][FIRST_COLUMN].multiplySubMatrix(
+                                    secondMatrixPartition[FIRST_ROW][secondColumn],
+                                    resultMatrixPartition[resultRow][resultColumn]
                                 )
                             }
                             launch {
-                                firstMatrixPartition[row][SECOND_COLUMN].multiplySubMatrix(
-                                    secondMatrixPartition[SECOND_ROW][column],
-                                    temporaryMatrixPartition[row][column]
+                                firstMatrixPartition[firstRow][SECOND_COLUMN].multiplySubMatrix(
+                                    secondMatrixPartition[SECOND_ROW][secondColumn],
+                                    temporaryMatrixPartition[resultRow][resultColumn]
                                 )
                             }
                         }
