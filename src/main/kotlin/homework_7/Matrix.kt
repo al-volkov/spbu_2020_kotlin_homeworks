@@ -88,7 +88,7 @@ class Matrix(private val numberOfRows: Int, private val numberOfColumns: Int) {
                     val secondMatrixPartition = secondMatrix.partition()
                     val resultMatrixPartition = resultMatrix.partition()
                     val temporaryMatrixPartition = temporaryMatrix.partition()
-                    recursiveLaunch(
+                    launchBlockMatrixMultiplication(
                         thisMatrixPartition,
                         secondMatrixPartition,
                         resultMatrixPartition,
@@ -110,7 +110,7 @@ class Matrix(private val numberOfRows: Int, private val numberOfColumns: Int) {
         }
 
         companion object {
-            fun recursiveLaunch(
+            fun launchBlockMatrixMultiplication(
                 firstMatrixPartition: Array<Array<SubMatrix>>,
                 secondMatrixPartition: Array<Array<SubMatrix>>,
                 resultMatrixPartition: Array<Array<SubMatrix>>,
