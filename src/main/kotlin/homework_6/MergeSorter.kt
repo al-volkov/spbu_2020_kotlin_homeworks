@@ -39,6 +39,7 @@ abstract class MergeSorter {
      * */
     abstract fun sort(array: IntArray, numberOfThreadsOrCoroutines: Int)
 
+    
     protected abstract fun IntArray.merge(
         subarray1: Subarray,
         subarray2: Subarray,
