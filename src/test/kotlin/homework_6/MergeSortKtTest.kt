@@ -1,7 +1,5 @@
 package homework_6
 
-import homework_6.MergeSort.mergeSortAsync
-import homework_6.MergeSort.mergeSortMT
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -30,17 +28,17 @@ internal class MergeSortKtTest {
         val expectedArray = arrayToSort.clone()
         expectedArray.sort()
         val actualArray = arrayToSort.clone()
-        actualArray.mergeSortMT(numberOfThreads)
+        MultiThreadMergeSorter().sort(actualArray, numberOfThreads)
         assertArrayEquals(expectedArray, actualArray)
     }
 
     @MethodSource("inputData")
     @ParameterizedTest(name = "mergeSortAsync test {index}, {1}")
-    fun mergeSortAsyncTest(arrayToSort: IntArray, numberOfThreads: Int) {
+    fun mergeSortAsyncTest(arrayToSort: IntArray, numberOfCoroutines: Int) {
         val expectedArray = arrayToSort.clone()
         expectedArray.sort()
         val actualArray = arrayToSort.clone()
-        actualArray.mergeSortAsync(numberOfThreads)
+        AsyncMergeSorter().sort(actualArray, numberOfCoroutines)
         assertArrayEquals(expectedArray, actualArray)
     }
 }
