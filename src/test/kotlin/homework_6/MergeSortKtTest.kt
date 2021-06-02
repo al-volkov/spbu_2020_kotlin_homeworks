@@ -14,7 +14,7 @@ internal class MergeSortKtTest {
         fun inputData(): List<Arguments> {
             val list = mutableListOf<Arguments>()
             for (numberOfThreads in 1..10) {
-                for (arraySize in 0..100) {
+                for (arraySize in 0..99) {
                     list.add(Arguments.of(getRandomArray(arraySize), numberOfThreads))
                 }
             }
