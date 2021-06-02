@@ -14,7 +14,7 @@ import kotlin.random.Random
 
 class DrawPlot(
     mergeSorter: MergeSorter,
-    numbersOfThreadsOrCoroutines: List<Int>,
+    numbersOfThreads: List<Int>,
     maxNumberOfElements: Int,
     step: Int,
 ) {
@@ -37,7 +37,7 @@ class DrawPlot(
     }
 
     init {
-        val dataset = createDataset(mergeSorter, numbersOfThreadsOrCoroutines, maxNumberOfElements, step)
+        val dataset = createDataset(mergeSorter, numbersOfThreads, maxNumberOfElements, step)
         val chart = ChartFactory.createXYLineChart(
             "dependence of sorting time on the number of elements",
             "number of elements",
@@ -58,10 +58,10 @@ class DrawPlot(
         mergeSorter: MergeSorter,
         array: LongArray,
         step: Int,
-        numberOfThreadsOrCoroutines: Int
+        numberOfThreads: Int
     ): XYSeries {
         val xySeries = XYSeries(
-            "number of ${mergeSorter.nameOfMethodUsed} - $numberOfThreadsOrCoroutines"
+            "number of ${mergeSorter.nameOfMethodUsed} - $numberOfThreads"
         )
         array.forEachIndexed { index, element -> xySeries.add(index * step, element) }
         return xySeries
@@ -77,12 +77,12 @@ class DrawPlot(
 
     private fun createDataset(
         mergeSorter: MergeSorter,
-        numbersOfThreadsOrCoroutines: List<Int>,
+        numbersOfThreads: List<Int>,
         maxNumberOfElements: Int,
         step: Int
     ): XYDataset {
         val xySeriesCollection = XYSeriesCollection()
-        numbersOfThreadsOrCoroutines.forEach {
+        numbersOfThreads.forEach {
             val time = LongArray(maxNumberOfElements / step) { 0 }
             for (index in 1 until maxNumberOfElements / step) {
                 time[index] = measureTime(mergeSorter, it, step * index)
