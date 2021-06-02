@@ -47,30 +47,24 @@ class Matrix(private val numberOfRows: Int, private val numberOfColumns: Int) {
         }
 
         private fun oneRowMatrixMultiply(secondMatrix: SubMatrix, resultMatrix: SubMatrix) {
-            for ((firstColumn, secondRow) in columnRange.zip(
-                columnRange.map { it - startColumn + secondMatrix.startRow }))
-                for ((secondColumn, resultColumn) in secondMatrix.columnRange.zip(
-                    secondMatrix.columnRange.map { it + -secondMatrix.startColumn + resultMatrix.startColumn }))
+            for ((firstColumn, secondRow) in columnRange.zip(secondMatrix.rowRange))
+                for ((secondColumn, resultColumn) in secondMatrix.columnRange.zip(resultMatrix.columnRange))
                     resultMatrix.mainMatrix[resultMatrix.startRow, resultColumn] +=
                         mainMatrix[startRow, firstColumn] *
                                 secondMatrix.mainMatrix[secondRow, secondColumn]
         }
 
         private fun oneColumnMatrixMultiply(secondMatrix: SubMatrix, resultMatrix: SubMatrix) {
-            for ((firstRow, resultRow) in rowRange.zip(
-                rowRange.map { it - startRow + resultMatrix.startRow }))
-                for ((secondColumn, resultColumn) in secondMatrix.columnRange.zip(
-                    secondMatrix.columnRange.map { it - secondMatrix.startColumn + resultMatrix.startColumn }))
+            for ((firstRow, resultRow) in rowRange.zip(resultMatrix.rowRange))
+                for ((secondColumn, resultColumn) in secondMatrix.columnRange.zip(resultMatrix.columnRange))
                     resultMatrix.mainMatrix[resultRow, resultColumn] +=
                         this.mainMatrix[firstRow, startColumn] *
                                 secondMatrix.mainMatrix[secondMatrix.startRow, secondColumn]
         }
 
         private fun secondMatrixOneColumnMultiply(secondMatrix: SubMatrix, resultMatrix: SubMatrix) {
-            for ((firstRow, resultRow) in rowRange.zip(
-                rowRange.map { it - startRow + resultMatrix.startRow }))
-                for ((firstColumn, secondRow) in columnRange.zip(
-                    columnRange.map { it - startColumn + secondMatrix.startRow }))
+            for ((firstRow, resultRow) in rowRange.zip(resultMatrix.rowRange))
+                for ((firstColumn, secondRow) in columnRange.zip(secondMatrix.rowRange))
                     resultMatrix.mainMatrix[resultRow, resultMatrix.startColumn] +=
                         mainMatrix[firstRow, firstColumn] *
                                 secondMatrix.mainMatrix[secondRow, secondMatrix.startColumn]
