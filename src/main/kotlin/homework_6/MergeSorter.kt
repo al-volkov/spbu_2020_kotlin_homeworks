@@ -2,9 +2,6 @@
 
 package homework_6
 
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-
 abstract class MergeSorter {
 
     abstract val nameOfMethodUsed: String
@@ -45,7 +42,17 @@ abstract class MergeSorter {
         temporaryArray.copyInto(array)
     }
 
-    protected fun IntArray.merge(
+    protected abstract fun launchParallel(runOnLeft: Runnable, runOnRight: Runnable)
+
+    /**
+     * merges two subarrays into [resultArray]
+     * [subarray1] first subarray
+     * [subarray2] second subarray
+     * [resultArray] an array where the elements will be placed
+     * [leftBoundOfSubarrayToPutElements] the index from which the elements will be placed in [resultArray]
+     * [numberOfThreads] number of threads or coroutines
+     */
+    private fun IntArray.merge(
         subarray1: Subarray,
         subarray2: Subarray,
         resultArray: IntArray,
@@ -85,42 +92,34 @@ abstract class MergeSorter {
             } else {
                 val numberOfThreadsForLeftPart = numberOfThreads / 2
                 val numberOfThreadsForRightPart = numberOfThreads - numberOfThreadsForLeftPart
-                this.launchParallelMerge(
-                    subarray1,
-                    subarray2,
-                    mid1,
-                    mid2,
-                    mid3,
-                    resultArray,
-                    leftBoundOfSubarrayToPutElements,
-                    numberOfThreadsForLeftPart,
-                    numberOfThreadsForRightPart,
+                launchParallel(
+                    {
+                        this.merge(
+                            Subarray(subarray1.leftBound, mid1 - 1),
+                            Subarray(subarray2.leftBound, mid2 - 1),
+                            resultArray, leftBoundOfSubarrayToPutElements, numberOfThreadsForLeftPart
+                        )
+                    },
+                    {
+                        this.merge(
+                            Subarray(mid1 + 1, subarray1.rightBound),
+                            Subarray(mid2, subarray2.rightBound),
+                            resultArray, mid3 + 1, numberOfThreadsForRightPart
+                        )
+                    }
                 )
             }
         }
     }
 
-    protected abstract fun IntArray.launchParallelMerge(
-        subarray1: Subarray,
-        subarray2: Subarray,
-        mid1: Int,
-        mid2: Int,
-        mid3: Int,
-        resultArray: IntArray,
-        leftBoundOfSubarrayToPutElements: Int,
-        numberOfThreadsForLeftPart: Int,
-        numberOfThreadsForRightPart: Int
-    )
-
     /**
      * sorts the array (or subarray) and puts the result in another array
-     * works asynchronously or multithreaded
      * [subarray] subarray that will be sorted
      * [resultArray] an array where the elements will be placed
      * [leftBoundOfSubarrayToPutElements] the index from which the elements will be placed
      * [numberOfThreads] number of threads or coroutines
      */
-    protected fun IntArray.mergeSortRecursive(
+    private fun IntArray.mergeSortRecursive(
         subarray: Subarray,
         resultArray: IntArray,
         leftBoundOfSubarrayToPutElements: Int,
@@ -141,166 +140,30 @@ abstract class MergeSorter {
                 } else {
                     val numberOfThreadsForLeftPart = numberOfThreads / 2
                     val numberOfThreadsForRightPart = numberOfThreads - numberOfThreadsForLeftPart
-                    this.launchParallelSort(
-                        subarray,
-                        mid,
-                        newMid,
-                        temporaryArray,
-                        numberOfThreadsForLeftPart,
-                        numberOfThreadsForRightPart
+                    launchParallel(
+                        {
+                            this.mergeSortRecursive(
+                                Subarray(subarray.leftBound, mid),
+                                temporaryArray,
+                                0,
+                                numberOfThreadsForLeftPart
+                            )
+                        }, {
+                            this.mergeSortRecursive(
+                                Subarray(mid + 1, subarray.rightBound),
+                                temporaryArray,
+                                newMid + 1,
+                                numberOfThreadsForRightPart
+                            )
+                        }
                     )
                 }
                 temporaryArray.merge(
-                    Subarray(
-                        0,
-                        newMid
-                    ),
-                    Subarray(
-                        newMid + 1,
-                        numberOfElements - 1
-                    ),
+                    Subarray(0, newMid),
+                    Subarray(newMid + 1, numberOfElements - 1),
                     resultArray,
                     leftBoundOfSubarrayToPutElements,
                     numberOfThreads
-                )
-            }
-        }
-    }
-
-    protected abstract fun IntArray.launchParallelSort(
-        subarray: Subarray,
-        mid: Int,
-        newMid: Int,
-        temporaryArray: IntArray,
-        numberOfThreadsForLeftPart: Int,
-        numberOfThreadsForRightPart: Int
-    )
-}
-
-class MultiThreadMergeSorter : MergeSorter() {
-    override val nameOfMethodUsed: String = "threads"
-
-    override fun IntArray.launchParallelMerge(
-        subarray1: Subarray,
-        subarray2: Subarray,
-        mid1: Int,
-        mid2: Int,
-        mid3: Int,
-        resultArray: IntArray,
-        leftBoundOfSubarrayToPutElements: Int,
-        numberOfThreadsForLeftPart: Int,
-        numberOfThreadsForRightPart: Int,
-    ) {
-        val firstThread =
-            Thread {
-                this.merge(
-                    Subarray(subarray1.leftBound, mid1 - 1),
-                    Subarray(subarray2.leftBound, mid2 - 1),
-                    resultArray, leftBoundOfSubarrayToPutElements, numberOfThreadsForLeftPart
-                )
-            }
-        val secondThread =
-            Thread {
-                this.merge(
-                    Subarray(mid1 + 1, subarray1.rightBound),
-                    Subarray(mid2, subarray2.rightBound),
-                    resultArray, mid3 + 1, numberOfThreadsForRightPart
-                )
-            }
-        firstThread.start()
-        secondThread.start()
-        firstThread.join()
-        secondThread.join()
-    }
-
-    override fun IntArray.launchParallelSort(
-        subarray: Subarray,
-        mid: Int,
-        newMid: Int,
-        temporaryArray: IntArray,
-        numberOfThreadsForLeftPart: Int,
-        numberOfThreadsForRightPart: Int
-    ) {
-        val firstThread =
-            Thread {
-                this.mergeSortRecursive(
-                    Subarray(subarray.leftBound, mid),
-                    temporaryArray,
-                    0,
-                    numberOfThreadsForLeftPart
-                )
-            }
-        val secondThread =
-            Thread {
-                this.mergeSortRecursive(
-                    Subarray(mid + 1, subarray.rightBound),
-                    temporaryArray,
-                    newMid + 1,
-                    numberOfThreadsForRightPart
-                )
-            }
-        firstThread.start()
-        secondThread.start()
-        firstThread.join()
-        secondThread.join()
-    }
-}
-
-class AsyncMergeSorter : MergeSorter() {
-    override val nameOfMethodUsed: String = "coroutines"
-
-    override fun IntArray.launchParallelMerge(
-        subarray1: Subarray,
-        subarray2: Subarray,
-        mid1: Int,
-        mid2: Int,
-        mid3: Int,
-        resultArray: IntArray,
-        leftBoundOfSubarrayToPutElements: Int,
-        numberOfThreadsForLeftPart: Int,
-        numberOfThreadsForRightPart: Int,
-    ) {
-        runBlocking {
-            launch {
-                this@launchParallelMerge.merge(
-                    Subarray(subarray1.leftBound, mid1 - 1),
-                    Subarray(subarray2.leftBound, mid2 - 1),
-                    resultArray, leftBoundOfSubarrayToPutElements, numberOfThreadsForLeftPart
-                )
-            }
-            launch {
-                this@launchParallelMerge.merge(
-                    Subarray(mid1 + 1, subarray1.rightBound),
-                    Subarray(mid2, subarray2.rightBound),
-                    resultArray, mid3 + 1, numberOfThreadsForRightPart
-                )
-            }
-        }
-    }
-
-    override fun IntArray.launchParallelSort(
-        subarray: Subarray,
-        mid: Int,
-        newMid: Int,
-        temporaryArray: IntArray,
-        numberOfThreadsForLeftPart: Int,
-        numberOfThreadsForRightPart: Int
-    ) {
-        runBlocking {
-            launch {
-                this@launchParallelSort.mergeSortRecursive(
-                    Subarray(subarray.leftBound, mid),
-                    temporaryArray,
-                    0,
-                    numberOfThreadsForLeftPart
-                )
-            }
-            launch {
-                this@launchParallelSort.mergeSortRecursive(
-                    Subarray(mid + 1, subarray.rightBound),
-                    temporaryArray,
-                    newMid + 1,
-                    numberOfThreadsForRightPart
                 )
             }
         }
