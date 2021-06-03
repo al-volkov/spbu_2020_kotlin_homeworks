@@ -1,6 +1,5 @@
 package homework_6
 
-import homework_6.MergeSort.mergeSortMT
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.ChartPanel
 import org.jfree.chart.JFreeChart
@@ -13,7 +12,12 @@ import java.awt.Color
 import java.awt.Dimension
 import kotlin.random.Random
 
-class DrawPlot(numbersOfThreads: List<Int>, maxNumberOfElements: Int, step: Int) {
+class DrawPlot(
+    mergeSorter: MergeSorter,
+    numbersOfThreads: List<Int>,
+    maxNumberOfElements: Int,
+    step: Int,
+) {
     private companion object {
         const val HEIGHT = 1000
         const val WIDTH = 1000
@@ -33,7 +37,7 @@ class DrawPlot(numbersOfThreads: List<Int>, maxNumberOfElements: Int, step: Int)
     }
 
     init {
-        val dataset = createDataset(numbersOfThreads, maxNumberOfElements, step)
+        val dataset = createDataset(mergeSorter, numbersOfThreads, maxNumberOfElements, step)
         val chart = ChartFactory.createXYLineChart(
             "dependence of sorting time on the number of elements",
             "number of elements",
@@ -50,28 +54,40 @@ class DrawPlot(numbersOfThreads: List<Int>, maxNumberOfElements: Int, step: Int)
         displayChart(chart)
     }
 
-    private fun createXYSeries(array: LongArray, step: Int, numberOfThreads: Int): XYSeries {
-        val xySeries = XYSeries("number of threads - $numberOfThreads")
+    private fun createXYSeries(
+        mergeSorter: MergeSorter,
+        array: LongArray,
+        step: Int,
+        numberOfThreads: Int
+    ): XYSeries {
+        val xySeries = XYSeries(
+            "number of ${mergeSorter.nameOfMethodUsed} - $numberOfThreads"
+        )
         array.forEachIndexed { index, element -> xySeries.add(index * step, element) }
         return xySeries
     }
 
-    private fun measureTime(numberOfThreads: Int, numberOfElements: Int): Long {
+    private fun measureTime(mergeSorter: MergeSorter, numberOfThreadsOrCoroutines: Int, numberOfElements: Int): Long {
         val array = IntArray(numberOfElements) { Random.nextInt() }
         var time = System.nanoTime()
-        array.mergeSortMT(numberOfThreads)
+        mergeSorter.sort(array, numberOfThreadsOrCoroutines)
         time = System.nanoTime() - time
         return time
     }
 
-    private fun createDataset(numbersOfThreads: List<Int>, maxNumberOfElements: Int, step: Int): XYDataset {
+    private fun createDataset(
+        mergeSorter: MergeSorter,
+        numbersOfThreads: List<Int>,
+        maxNumberOfElements: Int,
+        step: Int
+    ): XYDataset {
         val xySeriesCollection = XYSeriesCollection()
         numbersOfThreads.forEach {
             val time = LongArray(maxNumberOfElements / step) { 0 }
             for (index in 1 until maxNumberOfElements / step) {
-                time[index] = measureTime(it, step * index)
+                time[index] = measureTime(mergeSorter, it, step * index)
             }
-            xySeriesCollection.addSeries(createXYSeries(time, step, it))
+            xySeriesCollection.addSeries(createXYSeries(mergeSorter, time, step, it))
         }
         return xySeriesCollection
     }

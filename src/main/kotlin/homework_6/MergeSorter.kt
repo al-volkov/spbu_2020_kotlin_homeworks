@@ -1,7 +1,10 @@
+@file:Suppress("LongParameterList")
+
 package homework_6
 
-object MergeSort {
-    private data class Subarray(val leftBound: Int, val rightBound: Int)
+abstract class MergeSorter {
+
+    abstract val nameOfMethodUsed: String
 
     /**
      * Binary search returns :
@@ -28,16 +31,28 @@ object MergeSort {
         return high
     }
 
+    protected data class Subarray(val leftBound: Int, val rightBound: Int)
+
+    /**
+     * Calls the recursive function
+     * */
+    fun sort(array: IntArray, numberOfThreads: Int) {
+        val temporaryArray = IntArray(array.size) { 0 }
+        array.mergeSortRecursive(Subarray(0, array.lastIndex), temporaryArray, 0, numberOfThreads)
+        temporaryArray.copyInto(array)
+    }
+
+    protected abstract fun launchParallel(runOnLeft: Runnable, runOnRight: Runnable)
+
     /**
      * merges two subarrays into [resultArray]
-     * works multithreaded
      * [subarray1] first subarray
      * [subarray2] second subarray
      * [resultArray] an array where the elements will be placed
      * [leftBoundOfSubarrayToPutElements] the index from which the elements will be placed in [resultArray]
-     * [numberOfThreads] number of threads
+     * [numberOfThreads] number of threads or coroutines
      */
-    private fun IntArray.mergeMT(
+    private fun IntArray.merge(
         subarray1: Subarray,
         subarray2: Subarray,
         resultArray: IntArray,
@@ -47,7 +62,7 @@ object MergeSort {
         val numberOfElementsInFirstSubarray = subarray1.rightBound - subarray1.leftBound + 1
         val numberOfElementsInSecondSubarray = subarray2.rightBound - subarray2.leftBound + 1
         if (numberOfElementsInFirstSubarray < numberOfElementsInSecondSubarray) {
-            this.mergeMT(
+            this.merge(
                 Subarray(subarray2.leftBound, subarray2.rightBound),
                 Subarray(subarray1.leftBound, subarray1.rightBound),
                 resultArray, leftBoundOfSubarrayToPutElements
@@ -64,12 +79,12 @@ object MergeSort {
                     (mid2 - subarray2.leftBound) // index in resultArray, see next line
             resultArray[mid3] = this[mid1]
             if (numberOfThreads <= 1) {
-                this.mergeMT(
+                this.merge(
                     Subarray(subarray1.leftBound, mid1 - 1),
                     Subarray(subarray2.leftBound, mid2 - 1),
                     resultArray, leftBoundOfSubarrayToPutElements
                 )
-                this.mergeMT(
+                this.merge(
                     Subarray(mid1 + 1, subarray1.rightBound),
                     Subarray(mid2, subarray2.rightBound),
                     resultArray, mid3 + 1
@@ -77,39 +92,34 @@ object MergeSort {
             } else {
                 val numberOfThreadsForLeftPart = numberOfThreads / 2
                 val numberOfThreadsForRightPart = numberOfThreads - numberOfThreadsForLeftPart
-                val firstThread =
-                    Thread {
-                        this.mergeMT(
+                launchParallel(
+                    {
+                        this.merge(
                             Subarray(subarray1.leftBound, mid1 - 1),
                             Subarray(subarray2.leftBound, mid2 - 1),
                             resultArray, leftBoundOfSubarrayToPutElements, numberOfThreadsForLeftPart
                         )
-                    }
-                val secondThread =
-                    Thread {
-                        this.mergeMT(
+                    },
+                    {
+                        this.merge(
                             Subarray(mid1 + 1, subarray1.rightBound),
                             Subarray(mid2, subarray2.rightBound),
                             resultArray, mid3 + 1, numberOfThreadsForRightPart
                         )
                     }
-                firstThread.start()
-                secondThread.start()
-                firstThread.join()
-                secondThread.join()
+                )
             }
         }
     }
 
     /**
      * sorts the array (or subarray) and puts the result in another array
-     * works multithreaded
      * [subarray] subarray that will be sorted
      * [resultArray] an array where the elements will be placed
      * [leftBoundOfSubarrayToPutElements] the index from which the elements will be placed
-     * [numberOfThreads] number of threads
+     * [numberOfThreads] number of threads or coroutines
      */
-    private fun IntArray.mergeSortMTRecursive(
+    private fun IntArray.mergeSortRecursive(
         subarray: Subarray,
         resultArray: IntArray,
         leftBoundOfSubarrayToPutElements: Int,
@@ -125,57 +135,37 @@ object MergeSort {
                 val mid = (subarray.leftBound + subarray.rightBound) / 2
                 val newMid = mid - subarray.leftBound
                 if (numberOfThreads <= 1) {
-                    this.mergeSortMTRecursive(Subarray(subarray.leftBound, mid), temporaryArray, 0, 1)
-                    this.mergeSortMTRecursive(Subarray(mid + 1, subarray.rightBound), temporaryArray, newMid + 1, 1)
+                    this.mergeSortRecursive(Subarray(subarray.leftBound, mid), temporaryArray, 0, 1)
+                    this.mergeSortRecursive(Subarray(mid + 1, subarray.rightBound), temporaryArray, newMid + 1, 1)
                 } else {
                     val numberOfThreadsForLeftPart = numberOfThreads / 2
                     val numberOfThreadsForRightPart = numberOfThreads - numberOfThreadsForLeftPart
-                    val firstThread =
-                        Thread {
-                            this.mergeSortMTRecursive(
+                    launchParallel(
+                        {
+                            this.mergeSortRecursive(
                                 Subarray(subarray.leftBound, mid),
                                 temporaryArray,
                                 0,
                                 numberOfThreadsForLeftPart
                             )
-                        }
-                    val secondThread =
-                        Thread {
-                            this.mergeSortMTRecursive(
+                        }, {
+                            this.mergeSortRecursive(
                                 Subarray(mid + 1, subarray.rightBound),
                                 temporaryArray,
                                 newMid + 1,
                                 numberOfThreadsForRightPart
                             )
                         }
-                    firstThread.start()
-                    secondThread.start()
-                    firstThread.join()
-                    secondThread.join()
+                    )
                 }
-                temporaryArray.mergeMT(
-                    Subarray(
-                        0,
-                        newMid
-                    ),
-                    Subarray(
-                        newMid + 1,
-                        numberOfElements - 1
-                    ),
+                temporaryArray.merge(
+                    Subarray(0, newMid),
+                    Subarray(newMid + 1, numberOfElements - 1),
                     resultArray,
                     leftBoundOfSubarrayToPutElements,
                     numberOfThreads
                 )
             }
         }
-    }
-
-    /**
-     * Calls the recursive function
-     * */
-    fun IntArray.mergeSortMT(numberOfThreads: Int) {
-        val temporaryArray = IntArray(this.size) { 0 }
-        this.mergeSortMTRecursive(Subarray(0, this.lastIndex), temporaryArray, 0, numberOfThreads)
-        temporaryArray.copyInto(this)
     }
 }
