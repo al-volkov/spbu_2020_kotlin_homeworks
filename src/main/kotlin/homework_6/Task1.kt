@@ -8,8 +8,8 @@ fun main() {
     val step = scanner.nextInt()
     println("enter 1 if you want to use multithreaded sort and 2 if you want to use asynchronous sort")
     val sorter = when (scanner.nextInt()) {
-        1 -> MultiThreadMergeSorter()
-        2 -> AsyncMergeSorter()
+        1 -> MultiThreadMergeSorter
+        2 -> AsyncMergeSorter
         else -> throw IllegalArgumentException("only 1 or 2 can be entered")
     }
     println("enter the numbers of threads/coroutines for which the time will be measured (in one line)")
