@@ -1,6 +1,6 @@
 package homework_6
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -28,7 +28,7 @@ internal class MergeSorterTest {
         val expectedArray = arrayToSort.clone()
         expectedArray.sort()
         val actualArray = arrayToSort.clone()
-        MultiThreadMergeSorter().sort(actualArray, numberOfThreads)
+        MultiThreadMergeSorter.sort(actualArray, numberOfThreads)
         assertArrayEquals(expectedArray, actualArray)
     }
 
@@ -38,7 +38,7 @@ internal class MergeSorterTest {
         val expectedArray = arrayToSort.clone()
         expectedArray.sort()
         val actualArray = arrayToSort.clone()
-        AsyncMergeSorter().sort(actualArray, numberOfCoroutines)
+        AsyncMergeSorter.sort(actualArray, numberOfCoroutines)
         assertArrayEquals(expectedArray, actualArray)
     }
 }

@@ -1,6 +1,6 @@
 package homework_6
 
-class MultiThreadMergeSorter : MergeSorter() {
+object MultiThreadMergeSorter : MergeSorter() {
     override val nameOfMethodUsed: String = "threads"
 
     override fun launchParallel(runOnLeft: Runnable, runOnRight: Runnable) {
