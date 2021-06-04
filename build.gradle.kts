@@ -3,10 +3,11 @@ import java.net.URL
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
     id("io.gitlab.arturbosch.detekt") version "1.15.0"
-    kotlin("plugin.serialization") version "1.4.31"
-    id("org.jetbrains.dokka") version "1.4.20"
+    kotlin("plugin.serialization") version "1.4.32"
+    id("org.jetbrains.dokka") version "1.4.30"
+    id("org.openjfx.javafxplugin") version "0.0.8"
     application
 }
 
@@ -19,6 +20,13 @@ repositories {
 }
 
 dependencies {
+    implementation("io.ktor:ktor-server-core:1.5.4")
+    implementation("io.ktor:ktor-server-netty:1.5.4")
+    implementation("io.ktor:ktor-websockets:1.5.4")
+    implementation("io.ktor:ktor-client-websockets:1.5.4")
+    implementation("io.ktor:ktor-client-cio:1.5.4")
+    implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation ("org.jetbrains.kotlin:kotlin-reflect:1.4.32")
     testImplementation(platform("org.junit:junit-bom:5.7.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
@@ -27,6 +35,14 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
     implementation("org.jfree:jfreechart:1.5.3")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.14.2")
+    implementation("no.tornado:tornadofx:1.7.20")
+    implementation("org.openjfx:javafx-base:11.0.2")
+    implementation("org.openjfx:javafx:11.0.2")
+    implementation("org.openjfx:javafx-controls:11.0.2")
+}
+
+javafx {
+    modules("javafx.controls")
 }
 
 tasks.test {
